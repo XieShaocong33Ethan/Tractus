@@ -1,0 +1,33 @@
+{
+  "engine": "tractus_engine:TractusEngine",
+  "engine_options": {
+    "model": "Ethan33X/Tractus-decision-4B",
+    "device": "cuda:0",
+    "dtype": "bfloat16"
+  },
+  "model_source": {
+    "kind": "transformers",
+    "repo": "Ethan33X/Tractus-decision-4B",
+    "revision": null,
+    "device": "cuda:0",
+    "dtype": "bfloat16",
+    "calibration": "temperature_scaling",
+    "binary_prior_shift": true,
+    "endogenous_readout": "terminal_option_logits",
+    "policy": "Every question is scored in a single causal forward pass via terminal option key logits with baseline log-odds centering and temperature calibration."
+  },
+  "torch": "2.8.0+cu128",
+  "transformers": "5.18.0",
+  "device": "cuda:0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA GeForce RTX 4080",
+  "loaded_seconds": 5.730919357389212,
+  "frozen_corpus_sha256": null,
+  "rows_path": [
+    "suite-0.3-probe-2.5k/selected-rows.jsonl.gz",
+    "suite-0.3-probe-2.5k/added-rows.jsonl.gz",
+    "suite-0.3-probe-2.5k/gsm8k-rows.jsonl.gz"
+  ],
+  "runner_sha256": "f4c9f36c4c557f537f1d8184db7bf00c5a84d9f4f0aa67f8c06198cead25818d",
+  "latency": "Device-synchronized in-process single forward wall time via direct canonical slot logits; excludes model loading."
+}

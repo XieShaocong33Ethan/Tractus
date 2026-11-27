@@ -1,0 +1,88 @@
+Modified MIT License (Tractus Community & Commercial License)
+
+Copyright (c) 2026 Ethan Xie (Shaocong Xie)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software, model weights, configuration files, and associated
+documentation files (collectively, the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+1. Attribution Notice
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+2. Consolidated Group & Affiliate Scope ("You")
+For all thresholds below, "You" includes the receiving legal entity and all
+of its direct or indirect Affiliates (any entity controlling, controlled by, or
+under common control with You, whether through majority equity ownership,
+voting power, board authority, or de facto management control). Revenue and
+monthly active user (MAU) metrics are calculated on an aggregate,
+consolidated group basis across You and all Affiliates over the trailing
+twelve (12) consecutive months.
+
+3. UI Attribution Requirement (Products > 1M MAU or > $1M Annual Revenue)
+If the Software or any derivative works thereof are used in a commercial
+product or service whose aggregate consolidated MAU exceeds 1,000,000 or
+whose trailing 12-month revenue attributable to products integrating the
+Software exceeds $1,000,000 USD (or currency equivalent), You shall
+prominently display "Powered by Tractus" (or "Tractus") on the user interface
+or API documentation of such product or service.
+
+4. Enterprise Scale Commercial Threshold (> $10M Revenue or > 10M MAU)
+Notwithstanding the general MIT grant above, if You and Your Affiliates have
+aggregate consolidated trailing 12-month revenue exceeding $10,000,000 USD
+(or equivalent) OR aggregate consolidated MAU exceeding 10,000,000, You must
+obtain a separate commercial license from the copyright holder prior to
+commercial deployment.
+
+5. Third-Party Commercial MaaS / Hosted API Threshold (> $100K Annual Revenue)
+If You or Your Affiliates make the Software or derivative models available to
+external third parties as a commercial Model-as-a-Service (MaaS), hosted
+inference API, batch decision API, or fine-tuning-as-a-service (whether
+metered per call/token or bundled inside a paid subscription or wrapper),
+and aggregate trailing 12-month MaaS/API-related revenue exceeds $100,000 USD
+(or equivalent), You must obtain a separate commercial MaaS license from the
+copyright holder, regardless of overall group revenue or MAU.
+
+6. Dedicated External Deployment Attribution & Anti-Circumvention
+(a) External Client Deployments: When an integrator, contractor, or vendor
+deploys or operates the Software specifically for an external organization's
+production environment, threshold eligibility under Sections 3-5 is evaluated
+against the ultimate production beneficiary and its Affiliates.
+(b) Anti-Circumvention & Automatic Termination: You may not form shell
+entities, special purpose vehicles (SPVs), transfer-pricing arrangements,
+segmented sub-applications, or multi-party subcontracting wrappers for the
+purpose of splitting revenue, MAU, or MaaS receipts below the thresholds in
+Sections 3-5. Any such circumvention automatically and immediately
+terminates all rights granted under this License for You and all Affiliates.
+
+7. Outputs & Independent Data
+Generated model outputs, discrete option selections, and synthetic training
+datasets created by running the Software are not deemed derivative works of
+the Software solely by virtue of generation, provided such outputs are not
+used primarily to replicate or reconstruct the Software for unlicensed MaaS
+redistribution.
+
+8. Commercial Licensing Contact
+For commercial licenses exceeding Sections 4 or 5 thresholds:
+xieshaocongethan@gmail.com
+
+9. Upstream Foundation Model Notice (Apache License 2.0)
+The Tractus model checkpoints (0.8B, 2B, 4B, 9B) are post-trained from the
+Qwen/Qwen3.5 base model family (Qwen/Qwen3.5-0.8B-Base, Qwen3.5-2B-Base,
+Qwen3.5-4B-Base, Qwen3.5-9B-Base), originally licensed under the Apache
+License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0). All
+modifications, calibrated decision readouts, and post-trained weights added
+by the Tractus author are governed by this Modified MIT License, while the
+upstream Qwen3.5 foundation notices remain preserved hereunder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise ERP - Executive Travel & Special Exemption Audit</title>
+  <style>
+    :root {
+      --erp-bg: #0f172a;
+      --erp-surface: #1e293b;
+      --erp-card: #243247;
+      --erp-border: #334155;
+      --erp-border-focus: #3b82f6;
+      --erp-text: #f8fafc;
+      --erp-text-muted: #94a3b8;
+      --erp-primary: #2563eb;
+      --erp-primary-hover: #1d4ed8;
+      --erp-danger: #ef4444;
+      --erp-danger-bg: rgba(239, 68, 68, 0.12);
+      --erp-warning: #f59e0b;
+      --erp-warning-bg: rgba(245, 158, 11, 0.12);
+      --erp-success: #10b981;
+      --erp-success-bg: rgba(16, 185, 129, 0.15);
+      --erp-purple: #8b5cf6;
+      --erp-purple-bg: rgba(139, 92, 246, 0.15);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: var(--erp-bg);
+      color: var(--erp-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Enterprise Header */
+    header.erp-header {
+      background: var(--erp-surface);
+      border-bottom: 1px solid var(--erp-border);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .erp-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .erp-logo-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: white;
+    }
+    .erp-brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--erp-text);
+      letter-spacing: -0.3px;
+    }
+    .erp-brand-title span {
+      color: #60a5fa;
+      font-weight: 500;
+      font-size: 14px;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: rgba(96, 165, 250, 0.12);
+      border-radius: 4px;
+    }
+
+    .erp-meta-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .kms-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #34d399;
+      background: var(--erp-success-bg);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 500;
+    }
+    .kms-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Main Container */
+    main.erp-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Claim Summary Banner */
+    .claim-banner {
+      background: var(--erp-surface);
+      border: 1px solid var(--erp-border);
+      border-radius: 12px;
+      padding: 18px 24px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+      gap: 16px;
+      align-items: center;
+    }
+    .banner-col h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--erp-text-muted);
+      margin-bottom: 4px;
+    }
+    .banner-col p {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--erp-text);
+    }
+    .banner-col .code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #93c5fd;
+    }
+    .amount-over {
+      color: var(--erp-danger);
+      font-weight: 700;
+    }
+    .variance-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--erp-danger-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* Two Column Layout */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* Left Column: Vouchers & Documentation */
+    .vouchers-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .panel-card {
+      background: var(--erp-surface);
+      border: 1px solid var(--erp-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      position: relative;
+    }
+    .panel-card.highlight-card {
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 1) 0%, rgba(36, 44, 70, 0.9) 100%);
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--erp-border);
+    }
+    .card-head h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--erp-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+    .badge-purple {
+      background: var(--erp-purple-bg);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+    .voucher-details {
+      font-size: 13px;
+      color: var(--erp-text-muted);
+      line-height: 1.6;
+    }
+    .voucher-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .voucher-row span.val {
+      color: var(--erp-text);
+      font-weight: 500;
+    }
+    .kms-cert-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11px;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kms-cert-box strong {
+      color: #a78bfa;
+    }
+
+    /* Right Column: Audit & Action Form */
+    .audit-form-card {
+      background: var(--erp-surface);
+      border: 1px solid var(--erp-border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .audit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .audit-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--erp-text);
+    }
+    .phase-badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .phase-s1 {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .phase-s2 {
+      background: var(--erp-purple-bg);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    .form-group .hint {
+      font-size: 11px;
+      color: var(--erp-text-muted);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    input[type="text"], select, textarea {
+      background: #0f172a;
+      border: 1px solid var(--erp-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--erp-text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--erp-border-focus);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    textarea {
+      resize: none;
+      height: 96px;
+      line-height: 1.5;
+    }
+    .s2-active-field {
+      border-color: #8b5cf6 !important;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25) !important;
+      background: #171d33 !important;
+    }
+
+    .checkbox-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--erp-border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .checkbox-box input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #8b5cf6;
+      cursor: pointer;
+    }
+    .checkbox-box span {
+      font-size: 13px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+
+    /* Actions and Submit */
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--erp-border);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--erp-border);
+      color: var(--erp-text-muted);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--erp-primary);
+      border: 1px solid #3b82f6;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--erp-primary-hover);
+    }
+    .btn-primary.btn-ready {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Neural Status HUD */
+    .neural-hud {
+      margin-top: 6px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--erp-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--erp-text-muted);
+    }
+    .hud-stat strong {
+      color: #60a5fa;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--erp-surface);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(16, 185, 129, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 540px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--erp-success-bg);
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      border: 2px solid #10b981;
+    }
+    .modal-card h2 {
+      font-size: 20px;
+      color: var(--erp-text);
+      font-weight: 700;
+    }
+    .modal-card p {
+      font-size: 14px;
+      color: var(--erp-text-muted);
+      line-height: 1.6;
+    }
+    .modal-meta-box {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--erp-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-meta-box span.lbl {
+      color: var(--erp-text-muted);
+    }
+    .modal-meta-box span.val {
+      color: #34d399;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="erp-header">
+    <div class="erp-brand">
+      <div class="erp-logo-badge">V</div>
+      <div class="erp-brand-title">Tractus Enterprise ERP <span>Executive Travel Audit Gate</span></div>
+    </div>
+    <div class="erp-meta-status">
+      <div class="kms-indicator">
+        <div class="kms-dot"></div>
+        KMS HSM Hardware Security Active
+      </div>
+      <div style="font-size: 13px; color: var(--erp-text-muted);">
+        Auditor: <strong>Tractus System 1 / 2 Autonomous Policy Engine</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="erp-container">
+
+    <!-- Claim Summary Banner -->
+    <div class="claim-banner">
+      <div class="banner-col">
+        <h4>Expense Claim ID</h4>
+        <p><span class="code">EXP-202611-US-0891</span></p>
+      </div>
+      <div class="banner-col">
+        <h4>Employee</h4>
+        <p>Dr. Julian Vance (AI Research)</p>
+      </div>
+      <div class="banner-col">
+        <h4>Claimed Total</h4>
+        <p class="amount-over">$14,800.00 USD</p>
+      </div>
+      <div class="banner-col">
+        <h4>Policy Cap</h4>
+        <p>$10,000.00 USD</p>
+      </div>
+      <div class="banner-col">
+        <h4>Audit Assessment</h4>
+        <div class="variance-badge">+48.0% Over-Policy Risk</div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+
+      <!-- Left Column: Vouchers & Documentation -->
+      <div class="vouchers-panel">
+        
+        <!-- Marriott Lodging Folio -->
+        <div class="panel-card">
+          <div class="card-head">
+            <h3>🏨 Marriott Marquis SF Lodging Folio</h3>
+            <span class="badge-tag badge-blue">Official Invoice</span>
+          </div>
+          <div class="voucher-details">
+            <div class="voucher-row"><span>Stay Dates:</span><span class="val">Dec 6 - Dec 12, 2026 (6 Nights)</span></div>
+            <div class="voucher-row"><span>Room Rate:</span><span class="val">$2,150.00 / night (Peak Conference)</span></div>
+            <div class="voucher-row"><span>Taxes & Fees:</span><span class="val">$1,900.00</span></div>
+            <div class="voucher-row"><span>Total Folio Amount:</span><span class="val" style="color: #f87171; font-weight: 700;">$14,800.00 USD</span></div>
+          </div>
+        </div>
+
+        <!-- NeurIPS Acceptance Letter -->
+        <div class="panel-card">
+          <div class="card-head">
+            <h3>🎓 NeurIPS 2026 Oral Presentation Letter</h3>
+            <span class="badge-tag badge-blue">Academic Priority</span>
+          </div>
+          <div class="voucher-details">
+            <div class="voucher-row"><span>Paper ID:</span><span class="val">#Paper-1892 (Top 1.2% Oral Spotlight)</span></div>
+            <div class="voucher-row"><span>Session:</span><span class="val">Foundation Models for Autonomous Control</span></div>
+            <div class="voucher-row"><span>Mandate:</span><span class="val">Lead Author On-Site Presentation Required</span></div>
+          </div>
+        </div>
+
+        <!-- SVP Exemption Authorization Voucher -->
+        <div class="panel-card highlight-card" id="card-svp-voucher">
+          <div class="card-head">
+            <h3 style="color: #c084fc;">📜 SVP Special Exemption Authorization Memo</h3>
+            <span class="badge-tag badge-purple">High-Level Exemption</span>
+          </div>
+          <div class="voucher-details">
+            <div class="voucher-row"><span>Signatory:</span><span class="val">Dr. Elena Rostova (Senior Vice President, AI)</span></div>
+            <div class="voucher-row"><span>Statutory Basis:</span><span class="val">Enterprise Travel Policy §4.2 (Tier-1 Keynote Exemption)</span></div>
+            <div class="voucher-row"><span>Allocated Cost Center:</span><span class="val">CC-AI-RESEARCH-8021</span></div>
+            
+            <div class="kms-cert-box">
+              <div><strong>KMS Hardware Signature:</strong> 0x7F9B62D1A89288C2</div>
+              <div><strong>Signature Digest:</strong> SHA256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4</div>
+              <div><strong>HSM Status:</strong> Cryptographically Verified (Algorithm Ed25519)</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Audit & Action Form -->
+      <div class="audit-form-card">
+        <div class="audit-header">
+          <h2>Autonomous Executive Audit Station</h2>
+          <div id="system-phase-pill" class="phase-badge phase-s1">
+            ⚡ System 1: Fast Path Active (Δz ≥ 1.0)
+          </div>
+        </div>
+
+        <!-- Employee ID & Code -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="employee-id-input">Employee ID</label>
+            <input type="text" id="employee-id-input" placeholder="e.g. EMP-88204" autocomplete="off" />
+            <span class="hint">Verified against HR Identity Registry</span>
+          </div>
+          <div class="form-group">
+            <label for="cost-center-select">Target Cost Center</label>
+            <select id="cost-center-select">
+              <option value="">-- Select Cost Center --</option>
+              <option value="CC-GENERAL-OPS">CC-GENERAL-OPS (General Operations)</option>
+              <option value="CC-MARKETING-102">CC-MARKETING-102 (Product Marketing)</option>
+              <option value="CC-AI-RESEARCH-8021">CC-AI-RESEARCH-8021 (AI Keynote Research)</option>
+            </select>
+            <span class="hint">Department budget code</span>
+          </div>
+        </div>
+
+        <!-- Over-Budget Justification Textarea (System 2 Target) -->
+        <div class="form-group">
+          <label for="policy-override-textarea">Statutory Policy Exemption Justification</label>
+          <textarea id="policy-override-textarea" placeholder="Awaiting autonomous arbitration or exemption clause..." autocomplete="off"></textarea>
+          <span class="hint" id="textarea-hint">System 1 routes simple tasks; complex policy dilemma triggers System 2 deliberation.</span>
+        </div>
+
+        <!-- KMS Key and Checkbox -->
+        <div class="form-group">
+          <label for="kms-hash-input">KMS HSM Cryptographic Security Key</label>
+          <input type="text" id="kms-hash-input" placeholder="Input SVP cryptographic token (e.g. 0x7F9B...)" autocomplete="off" />
+        </div>
+
+        <div class="checkbox-box" id="box-kms-verify">
+          <input type="checkbox" id="kms-verify-checkbox" />
+          <span>I confirm SVP cryptographic authorization has been verified under Policy §4.2</span>
+        </div>
+
+        <!-- Neural Telemetry HUD -->
+        <div class="neural-hud">
+          <div class="hud-stat">
+            Neural Engine: <strong>Apple Silicon Metal GPU (MLX INT4)</strong>
+          </div>
+          <div class="hud-stat">
+            Step Latency: <strong id="hud-latency">0.00 ms</strong>
+          </div>
+          <div class="hud-stat">
+            Delta_z: <strong id="hud-deltaz">+1.42</strong>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+          <button type="button" class="btn-secondary" id="btn-erp-reject">Reject Claim</button>
+          <button type="button" class="btn-primary" id="btn-erp-approve">
+            <span>Approve & Post to General Ledger</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Success Confirmation Modal -->
+  <div class="modal-overlay" id="erp-success-modal">
+    <div class="modal-card">
+      <div class="modal-icon">✔</div>
+      <h2>Executive Claim Successfully Approved</h2>
+      <p>The +48.0% lodging variance was arbitrated by Tractus System 2 via SVP Special Exemption Policy §4.2. Transaction recorded on enterprise audit ledger.</p>
+      <div class="modal-meta-box">
+        <div><span class="lbl">Approval Reference:</span> <span class="val">APPR-202611-094188</span></div>
+        <div><span class="lbl">Accounting Ledger:</span> <span class="val">POSTED_TO_GENERAL_LEDGER</span></div>
+        <div><span class="lbl">KMS Verification:</span> <span class="val">0x7F9B62D1A89288C2 (VERIFIED)</span></div>
+        <div><span class="lbl">Total Process Latency:</span> <span class="val" id="modal-total-latency">--</span></div>
+      </div>
+      <button type="button" class="btn-primary" style="margin-top: 8px; width: 100%; justify-content: center;" onclick="document.getElementById('erp-success-modal').classList.remove('active')">
+        Close Audit Record
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Simple UI state helpers
+    const approveBtn = document.getElementById("btn-erp-approve");
+    const modal = document.getElementById("erp-success-modal");
+    const phasePill = document.getElementById("system-phase-pill");
+    const textarea = document.getElementById("policy-override-textarea");
+
+    approveBtn.addEventListener("click", () => {
+      modal.classList.add("active");
+    });
+
+    window.setSystemPhase = function(mode, deltaz, latency) {
+      if (mode === "s2") {
+        phasePill.className = "phase-badge phase-s2";
+        phasePill.innerHTML = "🧠 System 2: Cognitive Deliberation Active (Δz &lt; 1.0)";
+        textarea.classList.add("s2-active-field");
+      } else {
+        phasePill.className = "phase-badge phase-s1";
+        phasePill.innerHTML = "⚡ System 1: Fast Path Active (Δz &ge; 1.0)";
+        textarea.classList.remove("s2-active-field");
+      }
+      if (deltaz !== undefined) document.getElementById("hud-deltaz").innerText = deltaz;
+      if (latency !== undefined) document.getElementById("hud-latency").innerText = latency + " ms";
+    };
+  </script>
+</body>
+</html>

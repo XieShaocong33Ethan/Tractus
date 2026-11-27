@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Identity & User Registration - Global Service</title>
+  <style>
+    :root {
+      --primary: #0052cc;
+      --primary-hover: #0747a6;
+      --surface: #ffffff;
+      --bg: #f4f5f7;
+      --border: #dfe1e6;
+      --text: #172b4d;
+      --text-sub: #5e6c84;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Cookie Banner Overlay */
+    .cookie-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #091e42;
+      color: white;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+      z-index: 9999;
+    }
+    .cookie-text {
+      max-width: 800px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .cookie-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-cookie-accept {
+      padding: 10px 20px;
+      background: #00875a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-cookie-reject {
+      padding: 10px 16px;
+      background: transparent;
+      color: #b3bac5;
+      border: 1px solid #42526e;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    header.s-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .s-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    main.s-container {
+      max-width: 600px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 16px;
+      flex: 1;
+    }
+    .reg-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .reg-card h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .reg-card p {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .form-control {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 14px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+    .btn-submit-reg {
+      width: 100%;
+      height: 44px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-submit-reg:hover {
+      background: var(--primary-hover);
+    }
+    .success-alert {
+      margin-top: 20px;
+      padding: 16px;
+      background: #e3fcef;
+      border: 1px solid #abf5d1;
+      border-radius: 4px;
+      color: #006644;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Cookie Modal -->
+  <div class="cookie-overlay" id="cookie-banner">
+    <div class="cookie-text">
+      <strong>GDPR & Privacy Consent:</strong> We value your personal privacy. Please accept cookies to proceed with user verification and access enterprise global services.
+    </div>
+    <div class="cookie-actions">
+      <button class="btn-cookie-accept" id="btn-accept-cookies" onclick="dismissCookies()">Accept All Cookies</button>
+      <button class="btn-cookie-reject" id="btn-reject-cookies">Manage Preferences</button>
+    </div>
+  </div>
+
+  <header class="s-header">
+    <div class="s-logo">🛡️ Global Service Identity</div>
+    <div style="font-size: 13px; color: var(--text-sub);">UltraJev Form & Privacy Suite</div>
+  </header>
+
+  <main class="s-container">
+    <div class="reg-card">
+      <h1>User Registration & Residence</h1>
+      <p>Please select your legal country of residence and provide verified contact details.</p>
+
+      <div class="form-group">
+        <label>Account Type</label>
+        <div style="display:flex; gap:16px; font-size:14px; margin-top:4px;">
+          <label style="font-weight:normal; display:flex; align-items:center; gap:6px;">
+            <input type="radio" name="acc_type" value="individual" checked /> Individual (Personal)
+          </label>
+          <label style="font-weight:normal; display:flex; align-items:center; gap:6px;">
+            <input type="radio" name="acc_type" value="corporate" /> Enterprise / Entity
+          </label>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap:12px;" class="form-group">
+        <div>
+          <label for="sel-title">Title</label>
+          <select class="form-control" id="sel-title">
+            <option>Mr.</option>
+            <option>Ms.</option>
+            <option>Mrs.</option>
+            <option>Dr.</option>
+            <option>Prof.</option>
+          </select>
+        </div>
+        <div>
+          <label for="txt-full-name">Full Legal Name</label>
+          <input type="text" class="form-control" id="txt-full-name" placeholder="e.g. John Alexander Smith" value="John Smith" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="sel-country-residence">Country of Primary Tax Residence</label>
+        <select class="form-control" id="sel-country-residence">
+          <option value="">-- Choose your country or jurisdiction --</option>
+          <option value="GB">United Kingdom (GB)</option>
+          <option value="US">United States (US)</option>
+          <option value="CA">Canada (CA)</option>
+          <option value="AU">Australia (AU)</option>
+          <option value="NZ">New Zealand (NZ)</option>
+          <option value="DE">Germany (DE)</option>
+          <option value="FR">France (FR)</option>
+          <option value="CH">Switzerland (CH)</option>
+          <option value="NL">Netherlands (NL)</option>
+          <option value="SG">Singapore (SG)</option>
+          <option value="JP">Japan (JP)</option>
+          <option value="HK">Hong Kong SAR (HK)</option>
+          <option value="IE">Ireland (IE)</option>
+          <option value="IT">Italy (IT)</option>
+          <option value="ES">Spain (ES)</option>
+          <option value="SE">Sweden (SE)</option>
+          <option value="NO">Norway (NO)</option>
+          <option value="DK">Denmark (DK)</option>
+          <option value="BE">Belgium (BE)</option>
+          <option value="AT">Austria (AT)</option>
+          <option value="KR">South Korea (KR)</option>
+          <option value="AE">United Arab Emirates (AE)</option>
+          <option value="IN">India (IN)</option>
+          <option value="BR">Brazil (BR)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sel-doc-type">Verification Document Type</label>
+        <select class="form-control" id="sel-doc-type">
+          <option value="passport">International Passport</option>
+          <option value="id_card">National Identity Card</option>
+          <option value="drivers_license">Driver's License</option>
+          <option value="residence_permit">Biometric Residence Permit</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="txt-phone-number">Mobile Phone Number (E.164 with Country Code)</label>
+        <input type="text" class="form-control" id="txt-phone-number" placeholder="e.g. +44 20 7946 0991" />
+      </div>
+
+      <div class="form-group">
+        <label style="font-weight:normal; font-size:12px; color:var(--text-sub); display:flex; gap:8px;">
+          <input type="checkbox" id="chk-terms-consent" checked />
+          <span>I certify that all information provided is accurate and agree to identity KYC compliance checks under GDPR regulations.</span>
+        </label>
+      </div>
+
+      <button class="btn-submit-reg" id="btn-next-step" onclick="submitRegistration()">
+        Next Step (Submit Registration)
+      </button>
+
+      <div class="success-alert hidden" id="reg-success-box">
+        ✓ Registration verified: United Kingdom (GB) confirmed. Goal Visibly Satisfied (0% Premature DONE).
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function dismissCookies() {
+      document.getElementById('cookie-banner').classList.add('hidden');
+    }
+    function submitRegistration() {
+      document.getElementById('reg-success-box').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

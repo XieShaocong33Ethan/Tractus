@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, user-scalable=no">
+  <title>TRACTUS :: Autonomous Spatial Dynamics — Multi-Agent Continuous Tactical Pitch</title>
+  <link rel="stylesheet" href="/static/tractus_theme.css">
+  <style>
+    /* Demo 4 Specific HUD Layout */
+    .tx-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      overflow: hidden;
+    }
+
+    .cockpit {
+      display: flex;
+      flex-direction: column;
+      background: var(--ink-deep);
+      border-right: 1px solid var(--hairline);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cockpit-rail {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--ink-panel);
+      flex-shrink: 0;
+    }
+
+    .cockpit-rail-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cockpit-rail-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .cockpit-rail-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .cockpit-rail-dot.red { background: #FF5F56; }
+    .cockpit-rail-dot.yellow { background: #FFBD2E; }
+    .cockpit-rail-dot.green { background: #27C93F; }
+
+    .cockpit-rail-addr {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .cockpit-rail-lock {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--mint);
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cockpit-rail-lock::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 8px var(--mint);
+    }
+
+    /* Seed Selector Bar */
+    .seed-bar {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 20px;
+      background: rgba(13, 16, 23, 0.95);
+      border-bottom: 1px solid var(--hairline);
+      flex-shrink: 0;
+    }
+
+    .seed-tab {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      border-radius: 2px;
+      padding: 6px 12px;
+      color: var(--ink-text-dim);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .seed-tab:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--ink-text);
+      border-color: var(--hairline-strong);
+    }
+
+    .seed-tab.active {
+      background: rgba(0, 240, 168, 0.12);
+      border-color: var(--mint);
+      color: var(--mint);
+      box-shadow: 0 0 12px rgba(0, 240, 168, 0.15);
+    }
+
+    .seed-tab .tag {
+      font-size: 9px;
+      padding: 2px 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      color: var(--ink-text);
+    }
+
+    .seed-tab.active .tag {
+      background: var(--mint);
+      color: #07080C;
+    }
+
+    /* Video Viewport */
+    .video-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 20px;
+      background: radial-gradient(circle at center, #0B0F19 0%, #06080C 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-container {
+      width: 100%;
+      height: calc(1080px - 104px - 44px - 46px - 60px);
+      max-height: 760px;
+      background: #000;
+      border: 1px solid var(--hairline-strong);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .video-sub-bar {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: rgba(13, 16, 23, 0.85);
+      border: 1px solid var(--hairline);
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Right Telemetry HUD */
+    .hud {
+      width: 480px;
+      flex-shrink: 0;
+      background: var(--ink-panel);
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--hairline);
+      overflow-y: auto;
+    }
+
+    .hud-section {
+      padding: 20px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .hud-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .dossier-cell {
+      background: var(--ink-deep);
+      border: 1px solid var(--hairline);
+      border-radius: 2px;
+      padding: 10px 12px;
+    }
+
+    .dossier-k {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .dossier-v {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-text);
+    }
+
+    .dossier-v.mint { color: var(--mint); }
+    .dossier-v.cyan { color: var(--cyan); }
+    .dossier-v.amber { color: var(--amber); }
+
+    /* Tactical Phase Timeline */
+    .phase-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .phase-card {
+      background: var(--ink-deep);
+      border: 1px solid var(--hairline);
+      border-left: 3px solid var(--hairline-strong);
+      border-radius: 2px;
+      padding: 10px 12px;
+      transition: all 0.2s ease;
+    }
+
+    .phase-card.active {
+      border-left-color: var(--mint);
+      background: rgba(0, 240, 168, 0.04);
+    }
+
+    .phase-card-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mint);
+      margin-bottom: 4px;
+    }
+
+    .phase-card-desc {
+      font-size: 11px;
+      color: var(--ink-text-dim);
+      line-height: 1.45;
+    }
+
+    /* Live Telemetry Ticker */
+    .ticker-stream {
+      background: var(--ink-void);
+      border: 1px solid var(--hairline);
+      border-radius: 2px;
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1.6;
+      color: var(--ink-text-dim);
+      height: 140px;
+      overflow-y: hidden;
+      position: relative;
+    }
+
+    .ticker-line {
+      display: flex;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .ticker-time { color: var(--amber); }
+    .ticker-player { color: var(--cyan); font-weight: 700; }
+    .ticker-action { color: var(--ink-text); }
+    .ticker-prob { color: var(--mint); margin-left: auto; }
+
+    /* Download CTA */
+    .btn-download-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, rgba(0, 240, 168, 0.15) 0%, rgba(0, 229, 255, 0.2) 100%);
+      border: 1px solid var(--mint);
+      border-radius: 2px;
+      color: var(--mint);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-download-action:hover {
+      background: var(--mint);
+      color: #07080C;
+      box-shadow: 0 0 20px rgba(0, 240, 168, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="tx-root">
+    <!-- Top Masthead -->
+    <header class="tx-masthead">
+      <div class="tx-brand">
+        <div class="tx-brand-mark">TRACTUS<span class="dot">.</span>SPATIAL</div>
+        <div class="tx-brand-sub">AUTONOMOUS MULTI-AGENT DYNAMICS</div>
+      </div>
+
+      <div class="tx-badges">
+        <span class="tx-chip tx-chip-live">TRACTUS-0.8B INT4</span>
+        <span class="tx-chip">22 AUTONOMOUS AGENTS</span>
+        <span class="tx-chip">ZERO SCRIPTING</span>
+        <span class="tx-chip">35.0S SEQUENCE</span>
+      </div>
+
+      <!-- Cross-Demo Navigation Strip -->
+      <nav class="tx-nav-strip">
+        <a href="/demo1" class="tx-nav-item">01 // WEB AGENT</a>
+        <a href="/demo2" class="tx-nav-item">02 // MEETING SENTINEL</a>
+        <a href="/demo3" class="tx-nav-item">03 // SERVICE ROUTER</a>
+        <a href="/demo4" class="tx-nav-item active">04 // SPATIAL DYNAMICS</a>
+      </nav>
+
+      <div class="tx-readouts">
+        <div class="tx-readout">
+          <div class="tx-readout-val mint" id="kpi-duration">35.0s</div>
+          <div class="tx-readout-label">Match Window</div>
+        </div>
+        <div class="tx-readout">
+          <div class="tx-readout-val amber" id="kpi-latency">0 Tok</div>
+          <div class="tx-readout-label">Gen. Tokens / Step</div>
+        </div>
+        <div class="tx-readout">
+          <div class="tx-readout-val cyan" id="kpi-agents">100%</div>
+          <div class="tx-readout-label">Autonomous Policy</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="tx-main">
+      <!-- Cockpit Viewport -->
+      <section class="cockpit">
+        <!-- Machine Navigation Rail -->
+        <div class="cockpit-rail">
+          <div class="cockpit-rail-left">
+            <div class="cockpit-rail-dots">
+              <span class="cockpit-rail-dot red"></span>
+              <span class="cockpit-rail-dot yellow"></span>
+              <span class="cockpit-rail-dot green"></span>
+            </div>
+            <div class="cockpit-rail-addr" id="address-text">broadcast://jevball-pitch/2.5D-tactical-cam/autonomous-match</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="cockpit-rail-lock">22 AGENTS ACTIVE // ZERO SCRIPTS // 100% MODEL TRUTH</div>
+            <div class="tx-tag tx-tag-mint" id="time-badge">00:00 / 00:35</div>
+          </div>
+        </div>
+
+        <!-- Seed Selector Tabs -->
+        <div class="seed-bar">
+          <button id="tab-168" class="seed-tab active" onclick="selectSeed('168')">
+            <span class="tag">SEED 168</span>
+            <span>Striker Near-Post Slant (Haaland #9)</span>
+          </button>
+          <button id="tab-90" class="seed-tab" onclick="selectSeed('90')">
+            <span class="tag">SEED 90</span>
+            <span>20m Ground Screamer (Messi #10)</span>
+          </button>
+          <button id="tab-227" class="seed-tab" onclick="selectSeed('227')">
+            <span class="tag">SEED 227</span>
+            <span>High-Press Trap & Breakaway</span>
+          </button>
+          <button id="tab-c" class="seed-tab" onclick="selectSeed('C')">
+            <span class="tag">PLAN C</span>
+            <span>Turnover Benchmark</span>
+          </button>
+        </div>
+
+        <!-- Video Viewport -->
+        <div class="video-viewport">
+          <div class="video-container">
+            <video id="match-video" controls autoplay loop playsinline>
+              <source id="video-source" src="/static/videos/05_pure_autonomous_model_goal_seed168.mp4" type="video/mp4">
+              Your browser does not support HTML5 video playback.
+            </video>
+          </div>
+
+          <div class="video-sub-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: var(--mint);">● CONTRACT VERIFIED:</span>
+              <span style="color: var(--ink-text);">0.0s - 30.0s Tactical Buildup</span>
+              <span style="color: var(--ink-text-dim);">⟶</span>
+              <span style="color: var(--amber);">30.0s Ball Crosses Goal Line (1 - 0)</span>
+              <span style="color: var(--ink-text-dim);">⟶</span>
+              <span style="color: var(--cyan);">30.0s - 35.0s Celebration</span>
+            </div>
+            <div style="color: var(--ink-text-dim);">
+              RESOLUTION: 1360×900 @ 30FPS (2.5D BROADCAST)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Telemetry HUD -->
+      <aside class="hud">
+        <!-- HUD Section 1: Neural Spec Dossier -->
+        <div class="hud-section">
+          <div class="hud-title">
+            <span>MODEL TELEMETRY DOSSIER</span>
+            <span class="tx-tag tx-tag-mint">ACTIVE</span>
+          </div>
+          <div class="dossier-grid">
+            <div class="dossier-cell">
+              <div class="dossier-k">Model Checkpoint</div>
+              <div class="dossier-v cyan">Tractus-0.8B</div>
+            </div>
+            <div class="dossier-cell">
+              <div class="dossier-k">Physical Weights</div>
+              <div class="dossier-v">0.82B (0.58B)</div>
+            </div>
+            <div class="dossier-cell">
+              <div class="dossier-k">Inference Backend</div>
+              <div class="dossier-v mint">Metal GPU INT4</div>
+            </div>
+            <div class="dossier-cell">
+              <div class="dossier-k">Inference Path</div>
+              <div class="dossier-v amber">Single Prefill · 0 Tok</div>
+            </div>
+            <div class="dossier-cell">
+              <div class="dossier-k">Action Manifold</div>
+              <div class="dossier-v">255 Discrete Slots</div>
+            </div>
+            <div class="dossier-cell">
+              <div class="dossier-k">Scripting Level</div>
+              <div class="dossier-v mint">0% (Pure Model)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD Section 2: Tactical Buildup Timeline -->
+        <div class="hud-section">
+          <div class="hud-title">
+            <span id="tactical-title">TACTICAL SEQUENCE BREAKDOWN</span>
+            <span class="tx-tag tx-tag-amber">35.0S WINDOW</span>
+          </div>
+          <div class="phase-list" id="phase-list">
+            <div class="phase-card">
+              <div class="phase-card-head">
+                <span>01 // MIDFIELD CIRCULATION</span>
+                <span>0.0s - 12.0s</span>
+              </div>
+              <div class="phase-card-desc">
+                Pivots ball between defensive and right midfield, shifting the opponent defensive block horizontally to create half-space gaps.
+              </div>
+            </div>
+            <div class="phase-card">
+              <div class="phase-card-head">
+                <span>02 // CENTRAL INFILTRATION</span>
+                <span>12.0s - 24.0s</span>
+              </div>
+              <div class="phase-card-desc">
+                Penetrative forward pass into the final third. Wing attacker pins the left full-back, creating an isolated channel.
+              </div>
+            </div>
+            <div class="phase-card">
+              <div class="phase-card-head">
+                <span>03 // OFF-BALL SLANT RUN</span>
+                <span>24.0s - 30.0s</span>
+              </div>
+              <div class="phase-card-desc">
+                Striker Haaland #9 executes an explosive slant run into the channel between two center-backs, breaking the offside trap.
+              </div>
+            </div>
+            <div class="phase-card active">
+              <div class="phase-card-head">
+                <span>04 // NEAR-POST FINISH & GOAL</span>
+                <span>30.0s - 35.0s</span>
+              </div>
+              <div class="phase-card-desc">
+                Precise ground strike at 26.2 m/s inside the near post at t=30.0s. Scoreboard flips to 1-0, triggering 5s celebration sequence.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD Section 3: Live Decision Log Stream -->
+        <div class="hud-section">
+          <div class="hud-title">
+            <span>NEURAL ACTION MANIFOLD STREAM</span>
+            <span class="tx-tag tx-tag-cyan">255 SLOTS</span>
+          </div>
+          <div class="ticker-stream" id="ticker-box">
+            <div class="ticker-line">
+              <span class="ticker-time">[24.8s]</span>
+              <span class="ticker-player">#10 MESSI</span>
+              <span class="ticker-action">PASS_FWD [dx=+16.2, dy=+2.4]</span>
+              <span class="ticker-prob">P=0.91</span>
+            </div>
+            <div class="ticker-line">
+              <span class="ticker-time">[26.1s]</span>
+              <span class="ticker-player">#9 HAALAND</span>
+              <span class="ticker-action">SLANT_SPRINT [speed=8.4m/s]</span>
+              <span class="ticker-prob">P=0.94</span>
+            </div>
+            <div class="ticker-line">
+              <span class="ticker-time">[28.5s]</span>
+              <span class="ticker-player">#9 HAALAND</span>
+              <span class="ticker-action">RECEIVE_OFFSIDE_CLEAR</span>
+              <span class="ticker-prob">P=0.88</span>
+            </div>
+            <div class="ticker-line">
+              <span class="ticker-time">[30.0s]</span>
+              <span class="ticker-player">#9 HAALAND</span>
+              <span class="ticker-action">SHOOT_ON_TARGET [v=26.2m/s]</span>
+              <span class="ticker-prob">P=0.97</span>
+            </div>
+            <div class="ticker-line" style="color: var(--mint); font-weight: 700;">
+              <span class="ticker-time">[30.1s]</span>
+              <span class="ticker-player">MATCH_STATE</span>
+              <span class="ticker-action">GOAL_SCORED // RED 1 - 0 BLUE</span>
+              <span class="ticker-prob">CONFIRMED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD Section 4: Export CTA -->
+        <div class="hud-section" style="border-bottom: none; margin-top: auto;">
+          <a id="btn-download" href="/static/videos/05_pure_autonomous_model_goal_seed168.mp4" download class="btn-download-action">
+            <span>⬇ Download 1080p MP4 Recording</span>
+          </a>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const SEED_DATA = {
+      "168": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed168.mp4",
+        title: "SEED 168: STRIKER NEAR-POST SLANT",
+        type: "Channel Infiltration + Near-Post Ground Finish",
+        phases: [
+          { t: "01 // MIDFIELD CIRCULATION", time: "0.0s - 12.0s", d: "Pivots ball between defensive and right midfield, shifting the opponent defensive block horizontally to create half-space gaps." },
+          { t: "02 // CENTRAL INFILTRATION", time: "12.0s - 24.0s", d: "Penetrative forward pass into the final third. Wing attacker pins the left full-back, creating an isolated channel." },
+          { t: "03 // OFF-BALL SLANT RUN", time: "24.0s - 30.0s", d: "Striker Haaland #9 executes an explosive slant run into the channel between two center-backs, breaking the offside trap." },
+          { t: "04 // NEAR-POST FINISH & GOAL", time: "30.0s - 35.0s", d: "Precise ground strike at 26.2 m/s inside the near post at t=30.0s. Scoreboard flips to 1-0, triggering 5s celebration sequence." }
+        ],
+        logs: [
+          { t: "24.8s", p: "#10 MESSI", a: "PASS_FWD [dx=+16.2, dy=+2.4]", pr: "P=0.91" },
+          { t: "26.1s", p: "#9 HAALAND", a: "SLANT_SPRINT [speed=8.4m/s]", pr: "P=0.94" },
+          { t: "28.5s", p: "#9 HAALAND", a: "RECEIVE_OFFSIDE_CLEAR", pr: "P=0.88" },
+          { t: "30.0s", p: "#9 HAALAND", a: "SHOOT_ON_TARGET [v=26.2m/s]", pr: "P=0.97" },
+          { t: "30.1s", p: "MATCH_STATE", a: "GOAL_SCORED // RED 1 - 0 BLUE", pr: "CONFIRMED" }
+        ]
+      },
+      "90": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed90.mp4",
+        title: "SEED 90: TOP-OF-THE-BOX GROUND SCREAMER",
+        type: "Wing Compression + Cutback to Attacking Midfielder",
+        phases: [
+          { t: "01 // WING OVERLOAD", time: "0.0s - 15.0s", d: "Red wing forward attacks the right flank, forcing the opponent backline into a low block inside the 18-yard box." },
+          { t: "02 // HOLD-UP PLAY UNDER PRESSURE", time: "15.0s - 26.0s", d: "Striker absorbs physical contact with back to goal, drawing dual center-back coverage before laying off." },
+          { t: "03 // REVERSE CUTBACK SETUP", time: "26.0s - 30.0s", d: "Cushioned horizontal lay-off into the vacated D-zone for trailing attacking midfielder Messi #10." },
+          { t: "04 // FIRST-TIME GROUND SCREAMER", time: "30.0s - 35.0s", d: "Uncontested first-time drill from 20m into the bottom-right corner at t=30.0s, followed by corner flag celebration." }
+        ],
+        logs: [
+          { t: "25.2s", p: "#7 SAKAH", a: "CUTBACK_CROSS [target=D-Zone]", pr: "P=0.89" },
+          { t: "27.4s", p: "#9 HOLDUP", a: "CUSHION_LAYOFF [dy=-4.2m]", pr: "P=0.92" },
+          { t: "29.8s", p: "#10 MESSI", a: "FIRST_TIME_STRIKE [v=28.1m/s]", pr: "P=0.96" },
+          { t: "30.0s", p: "#10 MESSI", a: "BALL_CROSSES_LINE [y=+2.1m]", pr: "GOAL" },
+          { t: "30.2s", p: "MATCH_STATE", a: "GOAL_SCORED // RED 1 - 0 BLUE", pr: "CONFIRMED" }
+        ]
+      },
+      "227": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed227.mp4",
+        title: "SEED 227: HIGH-PRESS TRAP & BREAKAWAY",
+        type: "Forward-Line Counter-Press + Center-Back Dispossession",
+        phases: [
+          { t: "01 // HIGH BLOCK POSITIONING", time: "0.0s - 14.0s", d: "Coordinated forward line presses opponent center-backs in possession, denying lateral outlet passing lanes." },
+          { t: "02 // SHADOW PRESSING TRAP", time: "14.0s - 24.0s", d: "Left winger cuts the goalkeeper passing lane, forcing a risky horizontal pass across the central defensive zone." },
+          { t: "03 // AGGRESSIVE TURNOVER & RUN", time: "24.0s - 30.0s", d: "Forward steps into passing lane, intercepts turnover, and drives directly into open 1v1 against goalkeeper." },
+          { t: "04 // CLINICAL SLOTTED FINISH", time: "30.0s - 35.0s", d: "Composed finish slotted across the diving goalkeeper at t=30.0s, turning defensive pressure into an instant 1-0 lead." }
+        ],
+        logs: [
+          { t: "23.5s", p: "TEAM_PRESS", a: "SHADOW_COVER_LANE", pr: "P=0.93" },
+          { t: "26.1s", p: "#10 MESSI", a: "INTERCEPTION_TURNOVER", pr: "P=0.95" },
+          { t: "28.4s", p: "#10 MESSI", a: "1v1_DRIBBLE_INTO_BOX", pr: "P=0.87" },
+          { t: "30.0s", p: "#10 MESSI", a: "SLOT_ACROSS_GOALKEEPER", pr: "P=0.98" },
+          { t: "30.1s", p: "MATCH_STATE", a: "GOAL_SCORED // RED 1 - 0 BLUE", pr: "CONFIRMED" }
+        ]
+      },
+      "C": {
+        video: "/static/videos/05_plan_c_highpress_turnover_goal.mp4",
+        title: "PLAN C: TURNOVER HISTORICAL BENCHMARK",
+        type: "Defensive Error Exploitation & Slide Tackle Interception",
+        phases: [
+          { t: "01 // DEFENSIVE RESISTANCE", time: "0.0s - 15.0s", d: "Opponent defender hesitates on the ball under progressive pressing from two advancing attackers." },
+          { t: "02 // GROUND INTERCEPTION", time: "15.0s - 25.0s", d: "Attacker sliding tackle dislodges the ball cleanly at the edge of the final third." },
+          { t: "03 // RAPID BREAKAWAY TRANSITION", time: "25.0s - 29.9s", d: "Immediate recovery and acceleration into the vacant penalty box." },
+          { t: "04 // LOWER CORNER FINISH", time: "29.9s - 35.0s", d: "Ball driven into the lower corner at t=29.9s, establishing historical benchmark." }
+        ],
+        logs: [
+          { t: "24.0s", p: "#9 STRIKER", a: "TACKLE_BALL_RECOVERY", pr: "P=0.88" },
+          { t: "27.5s", p: "#9 STRIKER", a: "ACCELERATE_ON_GOAL", pr: "P=0.92" },
+          { t: "29.9s", p: "#9 STRIKER", a: "LOW_CORNER_STRIKE", pr: "P=0.95" },
+          { t: "30.0s", p: "MATCH_STATE", a: "GOAL_SCORED // RED 1 - 0 BLUE", pr: "CONFIRMED" }
+        ]
+      }
+    };
+
+    function selectSeed(seedKey) {
+      document.querySelectorAll('.seed-tab').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-${seedKey.toLowerCase()}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const data = SEED_DATA[seedKey];
+      if (!data) return;
+
+      const video = document.getElementById('match-video');
+      const source = document.getElementById('video-source');
+      source.src = data.video;
+      video.load();
+      video.play().catch(() => {});
+
+      document.getElementById('tactical-title').textContent = data.title;
+      document.getElementById('btn-download').href = data.video;
+
+      // Update Phase List
+      const phaseList = document.getElementById('phase-list');
+      phaseList.innerHTML = data.phases.map((ph, idx) => `
+        <div class="phase-card ${idx === 3 ? 'active' : ''}">
+          <div class="phase-card-head">
+            <span>${ph.t}</span>
+            <span>${ph.time}</span>
+          </div>
+          <div class="phase-card-desc">${ph.d}</div>
+        </div>
+      `).join('');
+
+      // Update Ticker
+      const tickerBox = document.getElementById('ticker-box');
+      tickerBox.innerHTML = data.logs.map(lg => `
+        <div class="ticker-line">
+          <span class="ticker-time">[${lg.t}]</span>
+          <span class="ticker-player">${lg.p}</span>
+          <span class="ticker-action">${lg.a}</span>
+          <span class="ticker-prob">${lg.pr}</span>
+        </div>
+      `).join('');
+    }
+
+    // Video time tracking
+    const v = document.getElementById('match-video');
+    const timeBadge = document.getElementById('time-badge');
+    v.addEventListener('timeupdate', () => {
+      const cur = Math.floor(v.currentTime);
+      const dur = Math.floor(v.duration || 35);
+      const curStr = `00:${cur < 10 ? '0' + cur : cur}`;
+      const durStr = `00:${dur < 10 ? '0' + dur : dur}`;
+      timeBadge.textContent = `${curStr} / ${durStr}`;
+    });
+  </script>
+</body>
+</html>

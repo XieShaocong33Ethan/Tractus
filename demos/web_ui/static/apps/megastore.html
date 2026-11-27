@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MegaStore - Electronics & Audio</title>
+  <style>
+    :root {
+      --primary: #131921;
+      --secondary: #febd69;
+      --secondary-hover: #f3a847;
+      --btn-cart: #ffd814;
+      --btn-cart-hover: #f7ca00;
+      --surface: #ffffff;
+      --bg: #e3e6e6;
+      --text: #0f1111;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* MegaStore Nav */
+    header.m-header {
+      background: var(--primary);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .m-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .m-logo span {
+      color: var(--secondary);
+    }
+    .m-search-form {
+      flex: 1;
+      display: flex;
+      max-width: 800px;
+    }
+    .m-search-input {
+      flex: 1;
+      height: 40px;
+      border: none;
+      border-radius: 4px 0 0 4px;
+      padding: 0 14px;
+      font-size: 15px;
+      outline: none;
+    }
+    .m-search-btn {
+      width: 48px;
+      background: var(--secondary);
+      border: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .m-cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .m-cart-badge {
+      background: var(--secondary);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    main.m-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+    }
+
+    .results-heading {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #565959;
+    }
+    .results-heading strong {
+      color: var(--text);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #d5d9d9;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .product-card.featured {
+      border: 2px solid #007185;
+    }
+    .badge-choice {
+      display: inline-block;
+      background: #232f3e;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-bottom: 10px;
+      align-self: flex-start;
+    }
+    .badge-choice span { color: var(--secondary); }
+
+    .product-img-box {
+      height: 180px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .product-img-box.bose {
+      background: linear-gradient(135deg, #111 0%, #333 100%);
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .product-img-box.budget {
+      background: #eaeaea;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .product-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .product-rating {
+      font-size: 13px;
+      color: #007185;
+      margin-bottom: 8px;
+    }
+    .product-price-row {
+      margin-bottom: 12px;
+    }
+    .price-symbol { font-size: 13px; vertical-align: top; }
+    .price-main { font-size: 24px; font-weight: 700; }
+    .price-fraction { font-size: 13px; vertical-align: top; }
+
+    .btn-add-cart {
+      height: 36px;
+      background: var(--btn-cart);
+      border: 1px solid #fcd200;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      transition: background 0.15s;
+    }
+    .btn-add-cart:hover {
+      background: var(--btn-cart-hover);
+    }
+
+    /* Cart Drawer / Confirmation */
+    .cart-drawer-section {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #d5d9d9;
+      padding: 20px;
+      margin-top: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .cart-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e7e7e7;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .cart-drawer-header h3 {
+      font-size: 18px;
+    }
+    .btn-checkout {
+      height: 40px;
+      padding: 0 24px;
+      background: var(--btn-cart);
+      border: 1px solid #fcd200;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkout-conf-box {
+      margin-top: 16px;
+      padding: 14px;
+      background: #e6f4ea;
+      border: 1px solid #34a853;
+      border-radius: 6px;
+      color: #137333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header class="m-header">
+    <a href="#" class="m-logo">Mega<span>Store</span></a>
+    <div class="m-search-form">
+      <input type="text" class="m-search-input" id="search-products-input" placeholder="Search products, brands, electronics..." value="noise cancelling headphones" />
+      <button class="m-search-btn" id="btn-search-products">🔍</button>
+    </div>
+    <div class="m-cart-btn" id="btn-cart-view">
+      <span>🛒 Cart</span>
+      <span class="m-cart-badge" id="cart-item-count">0</span>
+    </div>
+  </header>
+
+  <main class="m-container">
+    <div class="results-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>1-8 of 8 results for <strong>"noise cancelling headphones"</strong></div>
+      <div style="font-size:13px; color:#565959; display:flex; align-items:center; gap:8px;">
+        <span>Sort by:</span>
+        <select style="padding:4px 8px; border-radius:4px; border:1px solid #d5d9d9; font-size:13px;">
+          <option>Featured</option>
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+          <option>Avg. Customer Review</option>
+          <option>Newest Arrivals</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Filter chips -->
+    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <span style="padding:4px 10px; background:#e7f4f5; border:1px solid #007185; border-radius:16px; font-size:12px; color:#007185; font-weight:600;">All Brands</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Bose (2)</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Sony (1)</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Apple (1)</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Sennheiser (1)</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Over-Ear</span>
+      <span style="padding:4px 10px; background:white; border:1px solid #d5d9d9; border-radius:16px; font-size:12px; color:#0f1111;">Prime / 2-Day Shipping</span>
+    </div>
+
+    <div class="products-grid">
+      <!-- Target Product 1: Bose QC Ultra -->
+      <div class="product-card featured" id="card-product-bose">
+        <span class="badge-choice">Mega's <span>Choice</span></span>
+        <div class="product-img-box bose">
+          Bose QC Ultra (Black)
+        </div>
+        <div class="product-title">
+          Bose QuietComfort Ultra Wireless Noise Cancelling Headphones with Spatial Audio
+        </div>
+        <div class="product-rating">
+          ★★★★★ 4.9 (3,420 ratings) • Free 2-Day Delivery
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">299</span><span class="price-fraction">00</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-bose" onclick="addToCart('bose')">
+          Add to Cart - Bose QuietComfort Ultra
+        </button>
+      </div>
+
+      <!-- Product 2: Sony WH-1000XM5 -->
+      <div class="product-card" id="card-product-sony">
+        <div class="product-img-box" style="background:#1f2937; color:#f3f4f6;">
+          Sony WH-1000XM5 (Silver)
+        </div>
+        <div class="product-title">
+          Sony WH-1000XM5 Premium Noise Canceling Wireless Over-Ear Headphones
+        </div>
+        <div class="product-rating">
+          ★★★★★ 4.8 (5,120 ratings) • Fast Shipping
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">348</span><span class="price-fraction">00</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-sony" onclick="addToCart('sony')">
+          Add to Cart - Sony WH-1000XM5
+        </button>
+      </div>
+
+      <!-- Product 3: Apple AirPods Max -->
+      <div class="product-card" id="card-product-apple">
+        <div class="product-img-box" style="background:#374151; color:#f9fafb;">
+          Apple AirPods Max (Space Gray)
+        </div>
+        <div class="product-title">
+          Apple AirPods Max Wireless Over-Ear Headphones with Active Noise Cancellation
+        </div>
+        <div class="product-rating">
+          ★★★★☆ 4.7 (4,890 ratings) • AppleCare+ Available
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">479</span><span class="price-fraction">00</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-apple" onclick="addToCart('apple')">
+          Add to Cart - Apple AirPods Max
+        </button>
+      </div>
+
+      <!-- Product 4: Sennheiser Momentum 4 -->
+      <div class="product-card" id="card-product-sennheiser">
+        <div class="product-img-box" style="background:#111827; color:#e5e7eb;">
+          Sennheiser Momentum 4
+        </div>
+        <div class="product-title">
+          Sennheiser Momentum 4 Wireless Headphones - 60-Hour Battery Life
+        </div>
+        <div class="product-rating">
+          ★★★★★ 4.8 (2,180 ratings) • Audiophile Tuned
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">279</span><span class="price-fraction">95</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-sennheiser" onclick="addToCart('sennheiser')">
+          Add to Cart - Sennheiser Momentum 4
+        </button>
+      </div>
+
+      <!-- Product 5: Anker Soundcore Space One Pro -->
+      <div class="product-card" id="card-product-anker">
+        <div class="product-img-box" style="background:#0284c7; color:white;">
+          Soundcore Space One Pro
+        </div>
+        <div class="product-title">
+          Anker Soundcore Space One Pro Hi-Res Wireless Noise Cancelling Headphones
+        </div>
+        <div class="product-rating">
+          ★★★★☆ 4.6 (1,340 ratings) • Best Value
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">149</span><span class="price-fraction">99</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-anker" onclick="addToCart('anker')">
+          Add to Cart - Soundcore Space One Pro
+        </button>
+      </div>
+
+      <!-- Competitor Product 6: Budget Audio -->
+      <div class="product-card" id="card-product-budget">
+        <div class="product-img-box budget">
+          Budget Audio Classic
+        </div>
+        <div class="product-title">
+          Budget Audio Basic Wireless In-Ear Earbuds
+        </div>
+        <div class="product-rating">
+          ★★★☆☆ 3.1 (412 ratings)
+        </div>
+        <div class="product-price-row">
+          <span class="price-symbol">$</span><span class="price-main">29</span><span class="price-fraction">00</span>
+        </div>
+        <button class="btn-add-cart" id="btn-add-budget">
+          Add to Cart - Budget Audio
+        </button>
+      </div>
+    </div>
+
+    <!-- Cart Drawer & Checkout -->
+    <div class="cart-drawer-section hidden" id="cart-drawer">
+      <div class="cart-drawer-header">
+        <h3>Shopping Cart (Subtotal: $299.00)</h3>
+        <button class="btn-checkout" id="btn-proceed-checkout" onclick="proceedCheckout()">
+          Proceed to Checkout ➔
+        </button>
+      </div>
+      <p style="font-size:14px; color:#565959;">Item: <strong>Bose QuietComfort Ultra ($299.00)</strong> has been added to your cart.</p>
+      <div class="checkout-conf-box hidden" id="checkout-confirmed-banner">
+        ✓ Order #MS-88192-US Placed Successfully. Goal 100% Satisfied (0% Premature DONE).
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function addToCart(item) {
+      document.getElementById('cart-item-count').textContent = '1';
+      document.getElementById('cart-drawer').classList.remove('hidden');
+      document.getElementById('cart-drawer').scrollIntoView({ behavior: 'smooth' });
+    }
+    function proceedCheckout() {
+      document.getElementById('checkout-confirmed-banner').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

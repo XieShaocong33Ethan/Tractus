@@ -1,0 +1,178 @@
+{
+  "benchmark": "JevBench-231",
+  "version": "2.0",
+  "contract": "chat_template",
+  "evaluated_model": "Tractus-decision-0.8B",
+  "parameter_count": {
+    "total_parameters": 820000000,
+    "total_parameters_readable": "0.82B",
+    "non_embedding_backbone": 580000000,
+    "non_embedding_backbone_readable": "0.58B"
+  },
+  "overall": {
+    "mode": "tractus_decision_recommended_for_sub_4b",
+    "accuracy": 0.7273,
+    "accuracy_pct": 72.73,
+    "solved": 168,
+    "dual_mode_tractus_solved": 162,
+    "dual_mode_tractus_accuracy_pct": 70.13,
+    "total": 231,
+    "raw_pfr_pct": 16.02,
+    "premature_done_rate": "0%"
+  },
+  "tiers": {
+    "easy": {
+      "solved": 48,
+      "total": 48,
+      "accuracy_pct": 100.0
+    },
+    "standard": {
+      "solved": 66,
+      "total": 72,
+      "accuracy_pct": 91.67
+    },
+    "hard": {
+      "solved": 54,
+      "total": 111,
+      "accuracy_pct": 48.65
+    }
+  },
+  "family_results": {
+    "Tractus-9B": {
+      "params": "9.24B (8.12B non-emb)",
+      "mode": "Tractus",
+      "max_new_tokens": 8192,
+      "solved": 210,
+      "total": 231,
+      "accuracy_pct": 90.91,
+      "easy_solved": 48,
+      "standard_solved": 72,
+      "hard_solved": 90,
+      "s2_escalation_pct": 29.0,
+      "raw_pfr_pct": 10.82,
+      "single_pass_median_latency_ms": 234.7
+    },
+    "Tractus-decision-9B": {
+      "params": "9.24B (8.12B non-emb)",
+      "mode": "Tractus-decision",
+      "max_new_tokens": 0,
+      "solved": 183,
+      "total": 231,
+      "accuracy_pct": 79.22,
+      "easy_solved": 48,
+      "standard_solved": 70,
+      "hard_solved": 65,
+      "s2_escalation_pct": 0.0,
+      "raw_pfr_pct": 10.82,
+      "single_pass_median_latency_ms": 234.7
+    },
+    "Tractus-4B": {
+      "params": "4.21B (3.57B non-emb)",
+      "mode": "Tractus",
+      "max_new_tokens": 8192,
+      "solved": 204,
+      "total": 231,
+      "accuracy_pct": 88.31,
+      "easy_solved": 48,
+      "standard_solved": 69,
+      "hard_solved": 87,
+      "s2_escalation_pct": 56.3,
+      "raw_pfr_pct": 14.29,
+      "single_pass_median_latency_ms": 163.8
+    },
+    "Tractus-decision-4B": {
+      "params": "4.21B (3.57B non-emb)",
+      "mode": "Tractus-decision",
+      "max_new_tokens": 0,
+      "solved": 176,
+      "total": 231,
+      "accuracy_pct": 76.19,
+      "easy_solved": 48,
+      "standard_solved": 67,
+      "hard_solved": 61,
+      "s2_escalation_pct": 0.0,
+      "raw_pfr_pct": 14.29,
+      "single_pass_median_latency_ms": 163.8
+    },
+    "Tractus-2B": {
+      "params": "1.88B (1.48B non-emb)",
+      "mode": "Tractus",
+      "recommended_mode": "Tractus-decision",
+      "max_new_tokens": 8192,
+      "solved": 151,
+      "total": 231,
+      "accuracy_pct": 65.37,
+      "easy_solved": 48,
+      "standard_solved": 58,
+      "hard_solved": 45,
+      "s2_escalation_pct": 45.0,
+      "raw_pfr_pct": 15.58,
+      "single_pass_median_latency_ms": 123.1
+    },
+    "Tractus-decision-2B": {
+      "params": "1.88B (1.48B non-emb)",
+      "mode": "Tractus-decision",
+      "max_new_tokens": 0,
+      "solved": 160,
+      "total": 231,
+      "accuracy_pct": 69.26,
+      "easy_solved": 48,
+      "standard_solved": 66,
+      "hard_solved": 46,
+      "s2_escalation_pct": 0.0,
+      "raw_pfr_pct": 15.58,
+      "single_pass_median_latency_ms": 123.1
+    },
+    "Tractus-0.8B": {
+      "params": "0.82B (0.58B non-emb)",
+      "mode": "Tractus",
+      "recommended_mode": "Tractus-decision",
+      "max_new_tokens": 4096,
+      "runtime": "hf_transformers",
+      "solved": 162,
+      "total": 231,
+      "accuracy_pct": 70.13,
+      "easy_solved": 48,
+      "standard_solved": 65,
+      "hard_solved": 49,
+      "s2_escalation_pct": 29.0,
+      "raw_pfr_pct": 16.02,
+      "single_pass_median_latency_ms": 114.6
+    },
+    "Tractus-decision-0.8B": {
+      "params": "0.82B (0.58B non-emb)",
+      "mode": "Tractus-decision",
+      "max_new_tokens": 0,
+      "solved": 168,
+      "total": 231,
+      "accuracy_pct": 72.73,
+      "easy_solved": 48,
+      "standard_solved": 66,
+      "hard_solved": 54,
+      "s2_escalation_pct": 0.0,
+      "raw_pfr_pct": 16.02,
+      "single_pass_median_latency_ms": 114.6
+    }
+  },
+  "invariants": {
+    "raw_pfr_range_pct": [10.82, 16.02],
+    "zero_cot_tokens_tractus_decision": true,
+    "single_pass_tractus_decision": true,
+    "dual_mode_tractus_2d_phase_gate": true,
+    "context_window": 262144
+  },
+  "hardware": {
+    "device": "NVIDIA RTX PRO 6000 Blackwell (BF16 256K unified chat_template) / RTX 4080 single-pass latency",
+    "single_pass_median_latency_ms": 114.6
+  },
+  "comparisons": [
+    {"model": "Tractus-9B (Dual-Mode System 1 + System 2, 8K)", "parameters": "9.24B", "solved": 210, "total": 231, "accuracy": "90.91%", "raw_pfr": "10.82%"},
+    {"model": "Tractus-4B (Dual-Mode System 1 + System 2, 8K)", "parameters": "4.21B", "solved": 204, "total": 231, "accuracy": "88.31%", "raw_pfr": "14.29%"},
+    {"model": "Tractus-decision-9B (Single-Pass System 1)", "parameters": "9.24B", "solved": 183, "total": 231, "accuracy": "79.22%", "raw_pfr": "10.82%"},
+    {"model": "Tractus-decision-4B (Single-Pass System 1)", "parameters": "4.21B", "solved": 176, "total": 231, "accuracy": "76.19%", "raw_pfr": "14.29%"},
+    {"model": "Tractus-decision-0.8B (Single-Pass System 1, rec. <=2B)", "parameters": "0.82B", "solved": 168, "total": 231, "accuracy": "72.73%", "raw_pfr": "16.02%"},
+    {"model": "Tractus-0.8B (Dual-Mode, HF 4K)", "parameters": "0.82B", "solved": 162, "total": 231, "accuracy": "70.13%", "raw_pfr": "16.02%"},
+    {"model": "Tractus-decision-2B (Single-Pass System 1, rec. <=2B)", "parameters": "1.88B", "solved": 160, "total": 231, "accuracy": "69.26%", "raw_pfr": "15.58%"},
+    {"model": "Tractus-2B (Dual-Mode, 8K)", "parameters": "1.88B", "solved": 151, "total": 231, "accuracy": "65.37%", "raw_pfr": "15.58%"}
+  ]
+}

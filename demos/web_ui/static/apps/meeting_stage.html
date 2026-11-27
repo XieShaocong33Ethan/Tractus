@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Meeting Stage - Tractus Duplex Meeting Copilot</title>
+  <style>
+    :root {
+      --meet-bg: #1A1D20;
+      --meet-surface: #18181B;
+      --meet-card: #1E2024;
+      --meet-border: #2A2E35;
+      --meet-border-bright: #38bdf8;
+      --meet-text: #f8fafc;
+      --meet-text-muted: #94a3b8;
+      --meet-blue: #3b82f6;
+      --meet-cyan: #0ea5e9;
+      --meet-green: #23D160;
+      --meet-green-bg: rgba(35, 209, 96, 0.15);
+      --meet-purple: #8b5cf6;
+      --meet-amber: #f59e0b;
+      --meet-gray: #64748b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: var(--meet-bg);
+      color: var(--meet-text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Zoom Header */
+    header.meet-header {
+      background: #18181B;
+      border-bottom: 1px solid #27272A;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .zwt-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .zoom-traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ztl-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+    .ztl-dot.red { background: #FF5F56; }
+    .ztl-dot.yellow { background: #FFBD2E; }
+    .ztl-dot.green { background: #27C93F; }
+    .zoom-shield-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #94A3B8;
+      background: #24272C;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #333842;
+    }
+    .zoom-meeting-title-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+    .zwt-center {
+      display: flex;
+      align-items: center;
+    }
+    .zoom-viewing-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34D399;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .zvb-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+    .pulse-green {
+      box-shadow: 0 0 8px #10B981;
+      animation: pulse-dot-green 1.2s infinite alternate;
+    }
+    @keyframes pulse-dot-green {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      100% { transform: scale(1.2); opacity: 1.0; }
+    }
+    .zvb-options {
+      color: #94A3B8;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+    .zoom-rec-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #F87171;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 3px 9px;
+      border-radius: 12px;
+    }
+    .rec-dot-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #EF4444;
+      box-shadow: 0 0 6px #EF4444;
+      animation: pulse-dot-green 0.9s infinite alternate;
+    }
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stat-badge {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--meet-border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-badge strong {
+      color: #38bdf8;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+    .token-badge {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .token-badge strong {
+      color: #6ee7b7;
+    }
+
+    /* Layout Grid */
+    main.meet-container {
+      padding: 14px 20px;
+      width: 100%;
+      height: calc(100vh - 56px);
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    /* Left Stage */
+    .stage-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* 4-Grid Video Participants */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      height: 100px;
+      flex-shrink: 0;
+    }
+    .participant-card {
+      background: var(--meet-surface);
+      border: 1px solid var(--meet-border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+    .participant-card.active-speaker {
+      border: 2px solid #23D160 !important;
+      box-shadow: 0 0 16px rgba(35, 209, 96, 0.45);
+      background: #1C2720;
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      z-index: 2;
+    }
+    .volume-ring {
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      z-index: 1;
+      transition: all 0.2s;
+    }
+    .active-speaker .volume-ring {
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px #38bdf8;
+      animation: ring-pulse 0.9s infinite alternate;
+    }
+    @keyframes ring-pulse {
+      from { transform: scale(0.95); opacity: 0.5; }
+      to { transform: scale(1.15); opacity: 1.0; }
+    }
+    .participant-info {
+      text-align: center;
+    }
+    .participant-info h4 {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--meet-text);
+      white-space: nowrap;
+    }
+    .participant-info span {
+      font-size: 9.5px;
+      color: var(--meet-text-muted);
+      display: block;
+    }
+
+    /* Main Presentation Spotlight Screen */
+    .spotlight-screen {
+      background: #090e18;
+      border: 1px solid var(--meet-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .spotlight-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--meet-border);
+      padding-bottom: 10px;
+    }
+    .spotlight-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .spotlight-header span.tag {
+      font-size: 11px;
+      color: var(--meet-text-muted);
+      background: #172233;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--meet-border);
+    }
+    .ppt-slide-card {
+      background: var(--meet-surface);
+      border: 1px solid var(--meet-border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .ppt-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .kpi-card {
+      background: #0f172a;
+      border: 1px solid var(--meet-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-card.spotlight-highlight {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+      transform: translateY(-2px);
+    }
+    .kpi-card span.lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .kpi-card span.val {
+      font-size: 19px;
+      font-weight: 800;
+      color: white;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+    .kpi-card span.sub {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.3;
+    }
+    .kpi-card.spotlight-highlight span.sub {
+      color: #cbd5e1;
+    }
+    .spotlight-banner {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--meet-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .spotlight-banner .bot-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      flex-shrink: 0;
+    }
+
+    /* Right Section: Stream + Bot Dock */
+    .right-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Top: Speech-Act Stream */
+    .copilot-section {
+      background: var(--meet-surface);
+      border: 1px solid var(--meet-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 48%;
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--meet-border);
+      padding-bottom: 8px;
+      flex-shrink: 0;
+    }
+    .section-header h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stream-feed {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .stream-feed::-webkit-scrollbar {
+      width: 4px;
+    }
+    .stream-feed::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 2px;
+    }
+    .chunk-item {
+      background: #0f172a;
+      border: 1px solid var(--meet-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 11.5px;
+      transition: all 0.2s;
+    }
+    .chunk-item.item-filler {
+      opacity: 0.55;
+      border-color: #334155;
+      background: #0a0e17;
+    }
+    .chunk-item.item-dispatch {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+    .chunk-item.item-supplement {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+    }
+    .chunk-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .spk-name {
+      font-weight: 600;
+      color: #93c5fd;
+      font-size: 11px;
+    }
+    .tag-chip {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .tag-filler {
+      background: rgba(100, 116, 139, 0.2);
+      color: #94a3b8;
+    }
+    .tag-dispatch {
+      background: rgba(14, 165, 233, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, 0.5);
+    }
+    .tag-supplement {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.5);
+    }
+    .chunk-text {
+      color: #e2e8f0;
+      line-height: 1.35;
+    }
+
+    /* Bottom: Autonomous Agent Bot Dock */
+    .bot-dock-section {
+      background: var(--meet-surface);
+      border: 1px solid var(--meet-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 52%;
+      overflow: hidden;
+    }
+    .bot-task-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .bot-task-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .bot-task-list::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 2px;
+    }
+    .bot-task-card {
+      background: #0d1524;
+      border: 1px solid var(--meet-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.3s;
+      animation: task-appear 0.3s ease;
+    }
+    @keyframes task-appear {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .bot-task-card.task-refined {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+    }
+    .bot-task-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .bot-task-id {
+      font-size: 11px;
+      font-weight: 800;
+      color: #38bdf8;
+      font-family: ui-monospace, monospace;
+    }
+    .bot-status-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .status-dispatched {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .status-refined {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+    .status-completed {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .bot-task-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+    }
+    .bot-amendment-box {
+      background: rgba(139, 92, 246, 0.1);
+      border-left: 2px solid #a855f7;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #d8b4fe;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+    .bot-task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .bot-task-footer span.token-saved {
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    /* Zoom Bottom Controls Toolbar */
+    .zoom-controls-toolbar {
+      height: 52px;
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .zct-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .zct-btn {
+      background: transparent;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      color: #9CA3AF;
+      cursor: pointer;
+    }
+    .zct-btn:hover { background: #27272A; color: #FFFFFF; }
+    .zct-icon { font-size: 15px; }
+    .zct-label { font-size: 9.5px; font-weight: 500; }
+    .zct-icon-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
+    .zct-badge {
+      position: absolute; top: -4px; right: -8px;
+      background: #3B82F6; color: #FFFFFF; font-size: 8.5px; font-weight: 800; padding: 1px 3px; border-radius: 6px;
+    }
+    .green-share { color: #23D160 !important; font-weight: 800; }
+    .zct-label.green { color: #23D160 !important; font-weight: 600; }
+    .sparkle-icon {
+      background: linear-gradient(135deg, #A855F7, #3B82F6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .zct-label.purple { color: #C084FC !important; font-weight: 600; }
+    .zoom-end-btn {
+      background: #E02828; border: none; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 5px 14px; border-radius: 5px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header (Zoom Workplace Window Chrome) -->
+  <header class="meet-header">
+    <div class="zwt-left">
+      <div class="zoom-traffic-lights">
+        <span class="ztl-dot red"></span>
+        <span class="ztl-dot yellow"></span>
+        <span class="ztl-dot green"></span>
+      </div>
+      <div class="zoom-shield-badge">
+        <span class="zoom-shield-icon">🛡️</span>
+        <span class="zoom-shield-text">256-bit E2EE • 882-901-2026</span>
+      </div>
+      <div class="zoom-meeting-title-tag">Project Lemur: Industrial Design & BOM Cost Review (AMI IS1008d)</div>
+    </div>
+    <div class="zwt-center">
+      <div class="zoom-viewing-badge">
+        <span class="zvb-dot pulse-green"></span>
+        <span>Viewing David (PM)'s Screen Share</span>
+        <span class="zvb-options">View Options ▾</span>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div id="sound-status-pill" class="stat-badge" onclick="enableAudioDirect()" style="cursor: pointer; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8;" title="Click to test or unmute audio">
+        🔊 Audio: <strong id="sound-status-txt">Ready</strong>
+      </div>
+      <div class="stat-badge">
+        Edge Filter: <strong id="val-rejection-rate">0.0%</strong> (<span id="val-filler-count">0</span> Silent / <span id="val-action-count">0</span> Dispatched)
+      </div>
+      <div class="stat-badge token-badge">
+        🛡️ Tokens Shielded: <strong id="val-tokens-saved">0</strong> (<span id="val-saving-pct">0.0%</span>)
+      </div>
+      <div class="zoom-rec-pill">
+        <span class="rec-dot-pulse"></span>
+        <span>REC</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="meet-container">
+
+    <!-- Left Stage: Video Grid + Presentation Screen -->
+    <div class="stage-section">
+      
+      <!-- 4-Grid Video Participants -->
+      <div class="video-grid">
+        <div class="participant-card" id="part-card-host">
+          <div class="avatar-wrapper">
+            <div class="volume-ring"></div>
+            <div class="avatar-img" style="background: #2563eb;">D</div>
+          </div>
+          <div class="participant-info">
+            <h4>David (PM)</h4>
+            <span>Project Manager</span>
+          </div>
+        </div>
+
+        <div class="participant-card" id="part-card-a">
+          <div class="avatar-wrapper">
+            <div class="volume-ring"></div>
+            <div class="avatar-img" style="background: #7c3aed;">S</div>
+          </div>
+          <div class="participant-info">
+            <h4>Sarah (ME)</h4>
+            <span>Marketing Expert</span>
+          </div>
+        </div>
+
+        <div class="participant-card" id="part-card-b">
+          <div class="avatar-wrapper">
+            <div class="volume-ring"></div>
+            <div class="avatar-img" style="background: #059669;">C</div>
+          </div>
+          <div class="participant-info">
+            <h4>Christine (UI)</h4>
+            <span>UI Specialist</span>
+          </div>
+        </div>
+
+        <div class="participant-card" id="part-card-c">
+          <div class="avatar-wrapper">
+            <div class="volume-ring"></div>
+            <div class="avatar-img" style="background: #d97706;">A</div>
+          </div>
+          <div class="participant-info">
+            <h4>Agnes (ID)</h4>
+            <span>Industrial Designer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Presentation Spotlight Screen -->
+      <div class="spotlight-screen" id="spotlight-screen-box">
+        <div class="spotlight-header">
+          <h3>📊 Remote Control Prototype BOM & Budget Analysis</h3>
+          <span class="tag">AMI IS1008d • Financial Deliberation</span>
+        </div>
+
+        <div class="ppt-slide-card">
+          <div class="ppt-title">
+            <span>Executive Production & Unit Cost Feasibility</span>
+            <span style="font-size: 12px; color: #34d399; font-weight: 600;">Status: Real-Time Synced</span>
+          </div>
+          
+          <div class="kpi-row">
+            <div class="kpi-card" id="kpi-budget">
+              <span class="lbl">Target Budget Cap</span>
+              <span class="val">€12.50</span>
+              <span class="sub">Executive ceiling specified by finance committee</span>
+            </div>
+            <div class="kpi-card" id="kpi-bom">
+              <span class="lbl">Current BOM Projection</span>
+              <span class="val" id="val-bom-cost">€9.95</span>
+              <span class="sub" id="sub-bom-detail">Sensors, casing & battery (Excludes LCD)</span>
+            </div>
+            <div class="kpi-card" id="kpi-breakeven">
+              <span class="lbl">50M Profit Target Break-Even</span>
+              <span class="val" id="val-breakeven-units">3.98M Units</span>
+              <span class="sub" id="sub-breakeven-detail">Retail @ €25.00 | Net margin: €12.55/unit</span>
+            </div>
+            <div class="kpi-card" id="kpi-vendor">
+              <span class="lbl">Vendor Action Item</span>
+              <span class="val" style="font-size: 16px;">Jira #HW-4092</span>
+              <span class="sub">Tooling & moulding negotiation for volume discount</span>
+            </div>
+          </div>
+
+          <div class="spotlight-banner" id="spotlight-banner-text">
+            <div class="bot-indicator"></div>
+            <span>System 1 (0.8B MLX INT4, single-pass prefill) actively monitors speech, silently rejecting fillers while autonomously dispatching tasks to background agents upon actionable intent.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zoom Bottom Controls Toolbar -->
+      <div class="zoom-controls-toolbar">
+        <div class="zct-group left">
+          <button class="zct-btn">
+            <div class="zct-icon-wrapper">
+              <span class="zct-icon">🎙️</span>
+            </div>
+            <span class="zct-label">Mute ▴</span>
+          </button>
+          <button class="zct-btn">
+            <span class="zct-icon">📹</span>
+            <span class="zct-label">Stop Video ▴</span>
+          </button>
+        </div>
+        <div class="zct-group center">
+          <button class="zct-btn"><span class="zct-icon">🛡️</span><span class="zct-label">Security</span></button>
+          <button class="zct-btn"><div class="zct-icon-wrapper"><span class="zct-icon">👥</span><span class="zct-badge">4</span></div><span class="zct-label">Participants</span></button>
+          <button class="zct-btn"><span class="zct-icon">💬</span><span class="zct-label">Chat</span></button>
+          <button class="zct-btn active-share"><span class="zct-icon green-share">⬆</span><span class="zct-label green">Share</span></button>
+          <button class="zct-btn"><span class="zct-icon rec-icon">⏺</span><span class="zct-label">Record</span></button>
+          <button class="zct-btn active-companion"><span class="zct-icon sparkle-icon">✨</span><span class="zct-label purple">AI Companion</span></button>
+          <button class="zct-btn"><span class="zct-icon">😊</span><span class="zct-label">Reactions</span></button>
+          <button class="zct-btn"><span class="zct-icon">🎛️</span><span class="zct-label">Apps</span></button>
+        </div>
+        <div class="zct-group right">
+          <button class="zoom-end-btn">Leave</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Zoom AI Companion & Speech Stream -->
+    <div class="right-section">
+
+      <!-- Speech-Act Stream -->
+      <div class="copilot-section">
+        <div class="section-header">
+          <h3>⚡ Real-Time Speech-Act Stream</h3>
+          <span style="font-size: 11px; color: #38bdf8;">0.8B MLX INT4 • Single-Pass Prefill</span>
+        </div>
+        <div class="stream-feed" id="stream-feed-box">
+          <!-- Feed items injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Autonomous Agent Task Dock -->
+      <div class="bot-dock-section">
+        <div class="section-header">
+          <h3>✨ Zoom AI Companion (Action Items)</h3>
+          <span style="font-size: 11px; color: #10b981; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+            Tractus Edge Active
+          </span>
+        </div>
+        <div class="bot-task-list" id="bot-task-list-box">
+          <!-- Background tasks dispatched dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <audio id="meeting-audio" preload="auto"></audio>
+
+  <script>
+    const speakerCardMap = {
+      "HOST": "part-card-host",
+      "PM": "part-card-host",
+      "PARTICIPANT_1": "part-card-a",
+      "ME": "part-card-a",
+      "PARTICIPANT_2": "part-card-b",
+      "UI": "part-card-b",
+      "PARTICIPANT_3": "part-card-c",
+      "ID": "part-card-c",
+    };
+
+    const speakerDisplayMap = {
+      "HOST": "David (PM)",
+      "PM": "David (PM)",
+      "PARTICIPANT_1": "Sarah (ME)",
+      "ME": "Sarah (ME)",
+      "PARTICIPANT_2": "Christine (UI)",
+      "UI": "Christine (UI)",
+      "PARTICIPANT_3": "Agnes (ID)",
+      "ID": "Agnes (ID)",
+    };
+
+    let totalChunks = 0;
+    let fillerCount = 0;
+    let actionCount = 0;
+    let totalTokensSaved = 0;
+
+    window.addStreamChunk = function(speakerKey, text, isFiller, category, latencyMs, audioUrl, taskPayload) {
+      totalChunks++;
+      if (isFiller) {
+        fillerCount++;
+        totalTokensSaved += 1200;
+      } else {
+        actionCount++;
+        if (category === "SUPPLEMENT_TASK") {
+          totalTokensSaved += 1850;
+        }
+      }
+
+      // Update Header Stats
+      const rate = ((fillerCount / totalChunks) * 100).toFixed(1);
+      const rateEl = document.getElementById("val-rejection-rate");
+      if (rateEl) rateEl.innerText = rate + "%";
+      const fEl = document.getElementById("val-filler-count");
+      if (fEl) fEl.innerText = fillerCount;
+      const aEl = document.getElementById("val-action-count");
+      if (aEl) aEl.innerText = actionCount;
+
+      const tokenEl = document.getElementById("val-tokens-saved");
+      if (tokenEl) tokenEl.innerText = totalTokensSaved.toLocaleString();
+      const pctEl = document.getElementById("val-saving-pct");
+      if (pctEl) pctEl.innerText = rate + "%";
+
+      // Speaker Ring Highlight
+      document.querySelectorAll(".participant-card").forEach(c => c.classList.remove("active-speaker"));
+      const cardId = speakerCardMap[speakerKey];
+      if (cardId && document.getElementById(cardId)) {
+        document.getElementById(cardId).classList.add("active-speaker");
+      }
+
+      // Audio Playback with Autoplay Fallback (Zero Echo, Single Device)
+      if (audioUrl) {
+        const audio = document.getElementById("meeting-audio");
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.playbackRate = 1.0;
+          audio.src = audioUrl;
+          audio.volume = 1.0;
+          audio.play().then(() => {
+            const statusTxt = document.getElementById("sound-status-txt");
+            if (statusTxt) statusTxt.innerText = "Playing (Human Speech)";
+          }).catch(e => {
+            console.log("Audio autoplay prevented by browser:", e);
+            const pill = document.getElementById("sound-status-pill");
+            if (pill) {
+              pill.style.background = "rgba(245, 158, 11, 0.2)";
+              pill.style.borderColor = "#f59e0b";
+              pill.style.color = "#fbbf24";
+              pill.innerHTML = "⚠️ Click to Unmute Audio";
+            }
+          });
+        }
+      }
+
+      // Append Stream Feed Item
+      const feed = document.getElementById("stream-feed-box");
+      const item = document.createElement("div");
+      let itemClass = "chunk-item ";
+      let tagClass = "tag-chip ";
+      let tagText = "";
+
+      if (isFiller) {
+        itemClass += "item-filler";
+        tagClass += "tag-filler";
+        tagText = `SILENT REJECTED (${latencyMs}ms)`;
+      } else if (category === "DISPATCH_TASK") {
+        itemClass += "item-dispatch";
+        tagClass += "tag-dispatch";
+        tagText = `DISPATCH TASK (${latencyMs}ms)`;
+      } else if (category === "SUPPLEMENT_TASK") {
+        itemClass += "item-supplement";
+        tagClass += "tag-supplement";
+        tagText = `AMEND TASK (${latencyMs}ms)`;
+      } else {
+        itemClass += "item-dispatch";
+        tagClass += "tag-dispatch";
+        tagText = `${category} (${latencyMs}ms)`;
+      }
+
+      item.className = itemClass;
+      item.innerHTML = `
+        <div class="chunk-meta">
+          <span class="spk-name">${speakerDisplayMap[speakerKey] || speakerKey}</span>
+          <span class="${tagClass}">${tagText}</span>
+        </div>
+        <div class="chunk-text">"${text}"</div>
+      `;
+      feed.appendChild(item);
+      feed.scrollTop = feed.scrollHeight;
+
+      // Handle Task Dispatch or Amendment
+      if (taskPayload) {
+        if (taskPayload.action === "DISPATCH") {
+          window.dispatchBackgroundBot(taskPayload);
+        } else if (taskPayload.action === "SUPPLEMENT") {
+          window.supplementBackgroundBot(taskPayload);
+        }
+      }
+
+      // Handle Spotlight & KPI Updates
+      const lower = text.toLowerCase();
+      if (lower.includes("budget") || lower.includes("calculations") || lower.includes("nine point nine five")) {
+        document.querySelectorAll(".kpi-card").forEach(c => c.classList.remove("spotlight-highlight"));
+        document.getElementById("kpi-budget").classList.add("spotlight-highlight");
+        document.getElementById("kpi-bom").classList.add("spotlight-highlight");
+        document.getElementById("spotlight-banner-text").innerHTML = `
+          <div class="bot-indicator"></div>
+          <span><strong>TASK-101 Dispatched</strong>: Background Agent queried prototype BOM model. Initial cost calculated at €9.95 vs €12.50 ceiling.</span>
+        `;
+      }
+      if (lower.includes("lcd display") || lower.includes("two to three") || lower.includes("twelve point") || lower.includes("twelve and a half")) {
+        document.querySelectorAll(".kpi-card").forEach(c => c.classList.remove("spotlight-highlight"));
+        const bomCard = document.getElementById("kpi-bom");
+        bomCard.classList.add("spotlight-highlight");
+        document.getElementById("val-bom-cost").innerText = "€12.45";
+        document.getElementById("sub-bom-detail").innerHTML = "<strong style='color:#38bdf8;'>+LCD Display €2.50</strong> | Total: €12.45 (Margin: €0.05)";
+        document.getElementById("spotlight-banner-text").innerHTML = `
+          <div class="bot-indicator"></div>
+          <span><strong>TASK-101 Refined</strong>: Agnes's LCD addition (+€2.50) automatically appended to BOM model without creating duplicate task (+1,850 Tokens saved).</span>
+        `;
+      }
+      if (lower.includes("fifty million profit") || lower.includes("quantity") || lower.includes("cost will come down")) {
+        document.querySelectorAll(".kpi-card").forEach(c => c.classList.remove("spotlight-highlight"));
+        document.getElementById("kpi-breakeven").classList.add("spotlight-highlight");
+        document.getElementById("spotlight-banner-text").innerHTML = `
+          <div class="bot-indicator"></div>
+          <span><strong>TASK-102 Dispatched</strong>: Break-even simulation running for €50M net profit target across scale discount curves.</span>
+        `;
+      }
+      if (lower.includes("negotiate with the vendors") || lower.includes("save some money") || lower.includes("production cost")) {
+        document.querySelectorAll(".kpi-card").forEach(c => c.classList.remove("spotlight-highlight"));
+        document.getElementById("kpi-vendor").classList.add("spotlight-highlight");
+        document.getElementById("spotlight-banner-text").innerHTML = `
+          <div class="bot-indicator"></div>
+          <span><strong>TASK-103 Dispatched</strong>: Created Jira action item for vendor tooling & moulding cost negotiation (-18% target).</span>
+        `;
+      }
+    };
+
+    window.dispatchBackgroundBot = function(task) {
+      const taskList = document.getElementById("bot-task-list-box");
+      const existing = document.getElementById("task-card-" + task.task_id);
+      if (existing) return;
+
+      const card = document.createElement("div");
+      card.className = "bot-task-card";
+      card.id = "task-card-" + task.task_id;
+      card.innerHTML = `
+        <div class="bot-task-header">
+          <span class="bot-task-id">#${task.task_id}</span>
+          <span class="bot-status-badge status-dispatched" id="status-${task.task_id}">DISPATCHED</span>
+        </div>
+        <div class="bot-task-title">${task.title}</div>
+        <div id="amendments-${task.task_id}"></div>
+        <div class="bot-task-footer">
+          <span>By: ${task.creator || 'PM'} ➔ Background Agent Pool</span>
+          <span class="token-saved">+1,200 tokens</span>
+        </div>
+      `;
+      taskList.appendChild(card);
+      taskList.scrollTop = taskList.scrollHeight;
+
+      // Transition to processing after 1.2s
+      setTimeout(() => {
+        const badge = document.getElementById("status-" + task.task_id);
+        if (badge && badge.innerText !== "REFINED") {
+          badge.className = "bot-status-badge status-completed";
+          badge.innerText = "COMPLETED";
+        }
+      }, 1800);
+    };
+
+    window.supplementBackgroundBot = function(task) {
+      const taskList = document.getElementById("bot-task-list-box");
+      let card = document.getElementById("task-card-" + task.task_id);
+      if (!card) {
+        window.dispatchBackgroundBot(task);
+        card = document.getElementById("task-card-" + task.task_id);
+      }
+      if (!card) return;
+
+      card.classList.add("task-refined");
+      const badge = document.getElementById("status-" + task.task_id);
+      if (badge) {
+        badge.className = "bot-status-badge status-refined";
+        badge.innerText = "REFINED";
+      }
+
+      const amendContainer = document.getElementById("amendments-" + task.task_id);
+      if (amendContainer) {
+        const amendBox = document.createElement("div");
+        amendBox.className = "bot-amendment-box";
+        amendBox.innerHTML = `↳ <strong>Constraint Appended</strong>: "${task.amendment || 'LCD screen parameter constraint'}"`;
+        amendContainer.appendChild(amendBox);
+      }
+
+      const footer = card.querySelector(".bot-task-footer span.token-saved");
+      if (footer) {
+        footer.innerText = "+3,050 tokens (Refined)";
+      }
+    };
+
+    window.clearActiveSpeaker = function() {
+      document.querySelectorAll(".participant-card").forEach(c => c.classList.remove("active-speaker"));
+    };
+
+    window.enableAudioDirect = function() {
+      const audio = document.getElementById("meeting-audio");
+      if (audio) {
+        audio.volume = 1.0;
+        audio.src = "/static/audio/demo2_chunk_04.mp3";
+        audio.play().then(() => {
+          const pill = document.getElementById("sound-status-pill");
+          if (pill) {
+            pill.style.background = "rgba(16, 185, 129, 0.2)";
+            pill.style.borderColor = "#10b981";
+            pill.style.color = "#34d399";
+            pill.innerHTML = "🔊 Audio Output: <strong>Active</strong>";
+          }
+        }).catch(e => {
+          console.warn("Manual audio unlock failed:", e);
+        });
+      }
+    };
+
+    document.addEventListener("click", () => {
+      const audio = document.getElementById("meeting-audio");
+      if (audio) {
+        audio.volume = 1.0;
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>

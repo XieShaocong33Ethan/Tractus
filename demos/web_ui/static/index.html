@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACTUS // FLIGHT DECK — Tractus Decision Foundation Models KEYNOTE PRESENTATION</title>
+  <link rel="stylesheet" href="/static/tractus_theme.css">
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    .deck-hero {
+      padding: 40px 32px 30px;
+      border-bottom: 1px solid var(--hairline);
+      background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.04) 0%, transparent 60%);
+    }
+    .deck-hero-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--amber);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .deck-hero-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink-text);
+      margin: 0 0 12px;
+    }
+    .deck-hero-sub {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-text-dim);
+      max-width: 860px;
+      margin: 0 0 20px;
+    }
+    .deck-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .deck-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline-strong);
+      color: var(--cyan);
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 32px;
+    }
+    .mission-card {
+      background: var(--ink-panel);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .mission-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 240, 255, 0.08);
+    }
+    .mission-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--amber);
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+    .mission-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink-text);
+      margin: 0 0 8px;
+    }
+    .mission-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink-text-dim);
+      margin: 0 0 16px;
+      flex: 1;
+    }
+    .mission-specs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 6px;
+      border: 1px solid var(--hairline);
+    }
+    .mission-spec-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .spec-k { color: var(--ink-text-faint); }
+    .spec-v { font-weight: 600; color: var(--cyan); }
+    .spec-v.green { color: var(--green); }
+    .spec-v.gold { color: var(--gold); }
+
+    .btn-launch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--cyan);
+      transition: all 0.2s ease;
+    }
+    .mission-card:hover .btn-launch {
+      background: var(--cyan);
+      color: #05070B;
+    }
+
+    .telemetry-deck {
+      margin: 0 32px 32px;
+      padding: 24px;
+      background: var(--ink-panel);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+    }
+    .telemetry-title {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .t-cell {
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--hairline);
+      border-radius: 6px;
+    }
+    .t-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-text-faint);
+      margin-bottom: 4px;
+      letter-spacing: 0.06em;
+    }
+    .t-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-text);
+    }
+  </style>
+</head>
+<body class="keynote-theme">
+
+  <!-- Top Cybernetic Navigation Header -->
+  <header class="tx-header">
+    <div class="tx-brand">
+      <span class="tx-glyph">◈</span>
+      <div class="tx-brand-meta">
+        <span class="tx-title">TRACTUS // FLIGHT DECK</span>
+        <span class="tx-sub">TRACTUS KEYNOTE PRESENTATION • DECISION FOUNDATION MODELS</span>
+      </div>
+    </div>
+
+    <!-- Navigation Strip -->
+    <nav class="tx-nav-strip">
+      <a href="/demo1" class="tx-nav-link"><span class="tx-nav-num">01</span> WEB AGENT</a>
+      <a href="/demo2" class="tx-nav-link"><span class="tx-nav-num">02</span> MEETING SENTINEL</a>
+      <a href="/demo3" class="tx-nav-link"><span class="tx-nav-num">03</span> SERVICE ROUTER</a>
+      <a href="/demo4" class="tx-nav-link"><span class="tx-nav-num">04</span> SPATIAL DYNAMICS</a>
+    </nav>
+
+    <!-- Global Telemetry Status -->
+    <div class="tx-telemetry">
+      <div class="tx-status-pill">
+        <span class="tx-dot-live"></span>
+        <span class="tx-stat-k">MODEL:</span>
+        <span class="tx-stat-v" style="color: var(--gold);">TRACTUS-0.8B INT4</span>
+      </div>
+      <div class="tx-status-pill">
+        <span class="tx-stat-k">HARDWARE:</span>
+        <span class="tx-stat-v">APPLE SILICON METAL GPU</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Flight Deck Content -->
+  <main style="max-width: 1440px; margin: 0 auto;">
+    
+    <!-- Hero Section -->
+    <section class="deck-hero">
+      <div class="deck-hero-tag">
+        <span>◈ SYSTEM OVERVIEW</span>
+        <span>::</span>
+        <span>PRODUCTION VERIFIED (ZERO MOCK • ZERO SYNTHETIC DELAY)</span>
+      </div>
+      <h1 class="deck-hero-title">Causal Decision Foundation Architecture</h1>
+      <p class="deck-hero-sub">
+        The Tractus series is a new family of open-weight Causal Decision Foundation Models engineered specifically for enterprise workflow arbitration, autonomous agent action selection, and discrete policy routing. Operating via single-pass causal logit projection over structured candidate action keys (Tractus-decision) with optional joint-gated System 2 deliberation (Tractus), Tractus eliminates autoregressive decoding latency on Apple Silicon (0 generated tokens) with verified 0% Premature DONE and 2D Analytic e-Thermostat calibration.
+      </p>
+      <div class="deck-tags">
+        <span class="deck-tag">MODEL: TRACTUS-0.8B (0.82B PARAMS / 0.58B BACKBONE)</span>
+        <span class="deck-tag">METAL GPU ACCELERATED (909 MB INT4)</span>
+        <span class="deck-tag">255-SLOT DISCRETE ACTION MANIFOLD</span>
+        <span class="deck-tag">2D ANALYTIC e-THERMOSTAT CALIBRATION</span>
+        <span class="deck-tag">NATIVE 256K CONTEXT WINDOW</span>
+      </div>
+    </section>
+
+    <!-- Mission Selector Grid -->
+    <section class="mission-grid">
+      
+      <!-- Demo 1 Card -->
+      <a href="/demo1" class="mission-card">
+        <div class="mission-num">MISSION 01 // AUTONOMOUS AGENT</div>
+        <h2 class="mission-title">Autonomous Web Navigation</h2>
+        <p class="mission-desc">
+          25-step autonomous form completion and DOM action arbitration. Evaluates interactive elements and projects deterministic action tokens (CLICK, TYPE, SCROLL, SUBMIT) with zero heuristic fallbacks.
+        </p>
+        <div class="mission-specs">
+          <div class="mission-spec-row">
+            <span class="spec-k">Inference Path:</span>
+            <span class="spec-v green">0 Generated Tokens · Single Prefill</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Task Suite:</span>
+            <span class="spec-v">5 Scenarios (20/20 Steps)</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Premature DONE:</span>
+            <span class="spec-v green">0% (Zero Premature Stop)</span>
+          </div>
+        </div>
+        <div class="btn-launch">LAUNCH DEMO 01 ➔</div>
+      </a>
+
+      <!-- Demo 2 Card -->
+      <a href="/demo2" class="mission-card">
+        <div class="mission-num">MISSION 02 // MEETING SENTINEL</div>
+        <h2 class="mission-title">Full-Duplex Meeting Sentinel</h2>
+        <p class="mission-desc">
+          Evaluates streamed ASR text transcripts from the AMI Meeting Corpus (12 slices over 63.6s, 3/12 filler chunks), classifying [FILLER, QUESTION, COMMAND, STATEMENT] to drive stateful duplex actions.
+        </p>
+        <div class="mission-specs">
+          <div class="mission-spec-row">
+            <span class="spec-k">Inference Path:</span>
+            <span class="spec-v green">Single-Pass Prefill (0.8B INT4)</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Filler Slices:</span>
+            <span class="spec-v green">3/12 Chunks (25% AMI)</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Input Modality:</span>
+            <span class="spec-v">Streamed ASR Transcripts</span>
+          </div>
+        </div>
+        <div class="btn-launch">LAUNCH DEMO 02 ➔</div>
+      </a>
+
+      <!-- Demo 3 Card -->
+      <a href="/demo3" class="mission-card">
+        <div class="mission-num">MISSION 03 // SERVICE ROUTER</div>
+        <h2 class="mission-title">Multi-Intent Service Router</h2>
+        <p class="mission-desc">
+          Processes streamed ASR text transcripts from authentic PolyAI MINDS-14 customer complaints across 4 binary risk/escalation heads plus banking-intent routing and automated specialist escalation cards.
+        </p>
+        <div class="mission-specs">
+          <div class="mission-spec-row">
+            <span class="spec-k">4-Head Analysis:</span>
+            <span class="spec-v green">Endogenous Decision Readout</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Queue Dispatch:</span>
+            <span class="spec-v green">Zero-Key Specialist Card</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Dataset / Modality:</span>
+            <span class="spec-v">PolyAI MINDS-14 ASR Text</span>
+          </div>
+        </div>
+        <div class="btn-launch">LAUNCH DEMO 03 ➔</div>
+      </a>
+
+      <!-- Demo 4 Card -->
+      <a href="/demo4" class="mission-card">
+        <div class="mission-num">MISSION 04 // SPATIAL DYNAMICS</div>
+        <h2 class="mission-title">Spatial Dynamics & Tactical Match</h2>
+        <p class="mission-desc">
+          Single-pass dynamic obstacle evasion, spatial navigation, and multi-agent coordination. 22 autonomous AI agents executing deterministic tactical build-ups and goal impacts under a 35.0s contract.
+        </p>
+        <div class="mission-specs">
+          <div class="mission-spec-row">
+            <span class="spec-k">Inference Path:</span>
+            <span class="spec-v green">Zero Autoregressive Decode</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Action Space:</span>
+            <span class="spec-v">255 Discrete Manifold</span>
+          </div>
+          <div class="mission-spec-row">
+            <span class="spec-k">Contract:</span>
+            <span class="spec-v gold">35.0s Broadcast Match</span>
+          </div>
+        </div>
+        <div class="btn-launch">LAUNCH DEMO 04 ➔</div>
+      </a>
+
+    </section>
+
+    <!-- Global Telemetry Invariants Deck -->
+    <section class="telemetry-deck">
+      <div class="telemetry-title">◈ VERIFIED HARDWARE & BENCHMARK INVARIANTS</div>
+      <div class="telemetry-grid">
+        <div class="t-cell">
+          <div class="t-label">BACKBONE MODEL</div>
+          <div class="t-val" style="color: var(--gold);">Tractus-0.8B (0.82B params)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">NON-EMBEDDING BACKBONE</div>
+          <div class="t-val">0.58B (580M) Parameters (24 Layers)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">HARDWARE RUNTIME</div>
+          <div class="t-val" style="color: var(--cyan);">Apple Silicon Metal GPU</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">RAM FOOTPRINT</div>
+          <div class="t-val">909 MB (INT4 Quantized)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">JEVBENCH 231 SCORE</div>
+          <div class="t-val" style="color: var(--green);">72.73% (0.8B Tractus-decision) / 90.91% (9B Tractus)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">DECISION INDEX 0.3 SKILL</div>
+          <div class="t-val" style="color: var(--green);">18.07 (0.8B) / 46.03 (9B)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">OPERATING REGIMES</div>
+          <div class="t-val" style="color: var(--green);">Tractus-decision (S1) / Tractus (S1+S2)</div>
+        </div>
+        <div class="t-cell">
+          <div class="t-label">PREMATURE DONE RATE</div>
+          <div class="t-val" style="color: var(--green);">0% (Zero Premature Stopping)</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Flights - Search Flights</title>
+  <style>
+    :root {
+      --google-blue: #1a73e8;
+      --google-blue-hover: #1765cc;
+      --google-gray-bg: #f8f9fa;
+      --google-surface: #ffffff;
+      --google-border: #dadce0;
+      --google-text: #202124;
+      --google-text-sub: #5f6368;
+      --google-green: #137333;
+      --google-green-bg: #e6f4ea;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Google Sans", Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: var(--google-gray-bg);
+      color: var(--google-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Google Flights Header */
+    header.g-header {
+      background: var(--google-surface);
+      border-bottom: 1px solid var(--google-border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .g-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .g-logo {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--google-text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .g-logo strong {
+      color: #4285f4;
+    }
+    .g-logo strong span.red { color: #ea4335; }
+    .g-logo strong span.yellow { color: #fbbc05; }
+    .g-logo strong span.green { color: #34a853; }
+    .g-tagline {
+      font-size: 13px;
+      background: #e8f0fe;
+      color: #1967d2;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    .g-nav-tabs {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      color: var(--google-text-sub);
+    }
+    .g-nav-tab {
+      padding: 6px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .g-nav-tab.active {
+      background: #e8f0fe;
+      color: #1967d2;
+      font-weight: 500;
+    }
+
+    /* Main Container */
+    main.g-container {
+      max-width: 1024px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 16px;
+      flex: 1;
+    }
+
+    .hero-heading {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .hero-heading h1 {
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--google-text);
+      letter-spacing: -0.5px;
+    }
+    .hero-heading p {
+      font-size: 14px;
+      color: var(--google-text-sub);
+      margin-top: 6px;
+    }
+
+    /* Search Box Card */
+    .g-search-card {
+      background: var(--google-surface);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .search-options-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--google-text-sub);
+    }
+    .search-select-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .search-select-pill:hover {
+      background: #f1f3f4;
+    }
+
+    .search-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr 180px auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .input-field-wrapper {
+      position: relative;
+    }
+    .input-field-wrapper label {
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: white;
+      padding: 0 4px;
+      font-size: 11px;
+      color: var(--google-text-sub);
+      font-weight: 500;
+    }
+    .g-input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--google-border);
+      border-radius: 4px;
+      padding: 0 14px;
+      font-size: 15px;
+      color: var(--google-text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .g-input:focus {
+      border-color: var(--google-blue);
+      box-shadow: 0 0 0 1px var(--google-blue);
+    }
+    .swap-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--google-border);
+      background: white;
+      color: var(--google-text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .swap-btn:hover {
+      background: #f1f3f4;
+    }
+    .btn-search {
+      height: 48px;
+      padding: 0 24px;
+      background: var(--google-blue);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.3);
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+    .btn-search:hover {
+      background: var(--google-blue-hover);
+      box-shadow: 0 1px 3px 1px rgba(60,64,67,0.15);
+    }
+
+    /* Results Section */
+    .results-section {
+      background: var(--google-surface);
+      border-radius: 8px;
+      border: 1px solid var(--google-border);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--google-border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    .results-title h2 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--google-text);
+    }
+    .results-title p {
+      font-size: 13px;
+      color: var(--google-text-sub);
+      margin-top: 2px;
+    }
+    .results-badge {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--google-green);
+      background: var(--google-green-bg);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .flight-card {
+      border: 1px solid var(--google-border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: white;
+      cursor: pointer;
+    }
+    .flight-card:hover {
+      border-color: #b8bdc5;
+      box-shadow: 0 2px 6px rgba(60,64,67,0.15);
+    }
+    .flight-card.top-pick {
+      border-left: 4px solid #1a73e8;
+    }
+    .flight-card.selected {
+      border: 2px solid #1a73e8;
+      background: #f8fbff;
+    }
+    .flight-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .airline-logo-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      background: #f1f3f4;
+      color: #3c4043;
+    }
+    .airline-logo-box.swiss {
+      background: #e70000;
+      color: white;
+    }
+    .airline-logo-box.ba {
+      background: #075aaa;
+      color: white;
+    }
+    .airline-logo-box.easyjet {
+      background: #ff6600;
+      color: white;
+    }
+    .airline-logo-box.lh {
+      background: #002244;
+      color: #ffcc00;
+    }
+
+    .flight-times-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .flight-times {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--google-text);
+    }
+    .flight-airline-name {
+      font-size: 13px;
+      color: var(--google-text-sub);
+      margin-top: 2px;
+    }
+    .flight-duration-col {
+      margin-left: 24px;
+    }
+    .flight-duration {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .flight-stops {
+      font-size: 13px;
+      color: var(--google-green);
+    }
+    .flight-stops.one-stop {
+      color: #c5221f;
+    }
+
+    .flight-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .flight-price-box {
+      text-align: right;
+    }
+    .flight-price {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--google-green);
+    }
+    .flight-price-sub {
+      font-size: 12px;
+      color: var(--google-text-sub);
+    }
+    .btn-select-flight {
+      padding: 8px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--google-blue);
+      background: white;
+      color: var(--google-blue);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-select-flight:hover, .btn-select-flight.selected {
+      background: var(--google-blue);
+      color: white;
+    }
+
+    /* Confirmation Banner */
+    .confirmation-banner {
+      background: #e6f4ea;
+      border: 1px solid #34a853;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .conf-icon {
+      width: 48px;
+      height: 48px;
+      background: #34a853;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .conf-details h3 {
+      font-size: 18px;
+      color: #137333;
+      margin-bottom: 4px;
+    }
+    .conf-details p {
+      font-size: 14px;
+      color: #202124;
+      line-height: 1.5;
+    }
+    .conf-pnr {
+      display: inline-block;
+      margin-top: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      background: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #ceead6;
+      font-weight: 700;
+    }
+
+    /* Agent Visual Indicator */
+    #agent-visual-cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate3d(-100px, -100px, 0);
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: none;
+    }
+    .agent-cursor-dot {
+      width: 14px;
+      height: 14px;
+      background: #00e5ff;
+      border: 2px solid #0f172a;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #00e5ff;
+    }
+    .agent-cursor-tag {
+      position: absolute;
+      left: 18px;
+      top: -6px;
+      background: #0f172a;
+      color: #00e5ff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      border: 1px solid #00e5ff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Agent Mouse Pointer -->
+  <div id="agent-visual-cursor">
+    <div class="agent-cursor-dot"></div>
+    <div class="agent-cursor-tag">Tractus Agent</div>
+  </div>
+
+  <header class="g-header">
+    <div class="g-logo-row">
+      <div class="g-logo">
+        <strong><span>G</span><span class="red">o</span><span class="yellow">o</span><span>g</span><span class="green">l</span><span class="red">e</span></strong> Flights
+      </div>
+      <span class="g-tagline">Official UltraJev 12 Benchmark Environment</span>
+    </div>
+    <nav class="g-nav-tabs">
+      <a href="#" class="g-nav-tab">Explore</a>
+      <a href="#" class="g-nav-tab active">Flights</a>
+      <a href="#" class="g-nav-tab">Hotels</a>
+      <a href="#" class="g-nav-tab">Vacation rentals</a>
+    </nav>
+  </header>
+
+  <main class="g-container">
+    <div class="hero-heading">
+      <h1>Flights</h1>
+      <p>Compare airlines and book non-stop flights across Europe</p>
+    </div>
+
+    <!-- Search Form Box -->
+    <div class="g-search-card" id="search-card">
+      <div class="search-options-row">
+        <div class="search-select-pill">⇄ One way ▾</div>
+        <div class="search-select-pill">👤 1 passenger ▾</div>
+        <div class="search-select-pill">Economy ▾</div>
+      </div>
+
+      <div class="search-inputs-grid">
+        <!-- Origin -->
+        <div class="input-field-wrapper">
+          <label for="origin-input">Where from?</label>
+          <input type="text" id="origin-input" class="g-input" placeholder="Where from?" value="" autocomplete="off" />
+        </div>
+
+        <button class="swap-btn" id="btn-swap-cities" title="Swap locations">⇄</button>
+
+        <!-- Destination -->
+        <div class="input-field-wrapper">
+          <label for="destination-input">Where to?</label>
+          <input type="text" id="destination-input" class="g-input" placeholder="Where to?" value="" autocomplete="off" />
+        </div>
+
+        <!-- Date -->
+        <div class="input-field-wrapper">
+          <label for="departure-date">Departure</label>
+          <input type="text" id="departure-date" class="g-input" value="Sep 20, 2026" readonly />
+        </div>
+
+        <!-- Search Button -->
+        <button id="search-flights-btn" class="btn-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          Search Flights
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <section class="results-section hidden" id="flight-results-section">
+      <div class="results-header">
+        <div class="results-title">
+          <h2>Top departing flights (Zurich to London)</h2>
+          <p>Ranked based on price, duration, and airport convenience</p>
+        </div>
+        <span class="results-badge">★ UltraJev Benchmark Suite</span>
+      </div>
+
+      <!-- Filter Chips Bar -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--google-border);">
+        <button class="btn-select-flight selected" style="padding: 4px 12px; font-size: 12px;">All Stops (10)</button>
+        <button class="btn-select-flight" style="padding: 4px 12px; font-size: 12px;">Nonstop only (5)</button>
+        <button class="btn-select-flight" style="padding: 4px 12px; font-size: 12px;">Star Alliance</button>
+        <button class="btn-select-flight" style="padding: 4px 12px; font-size: 12px;">oneworld</button>
+        <button class="btn-select-flight" style="padding: 4px 12px; font-size: 12px;">Under CHF 150</button>
+        <button class="btn-select-flight" style="padding: 4px 12px; font-size: 12px;">Morning Departure</button>
+      </div>
+
+      <!-- Card 1: Swiss International Air Lines LX 316 (Official Target) -->
+      <div class="flight-card top-pick" id="card-flight-lx316" onclick="selectFlight('lx316')">
+        <div class="flight-left">
+          <div class="airline-logo-box swiss">LX</div>
+          <div class="flight-times-col">
+            <div class="flight-times">07:15 – 08:05</div>
+            <div class="flight-airline-name">Swiss International Air Lines • LX 316</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">1h 50m</div>
+            <div class="flight-stops">Non-stop • ZRH ➔ LHR</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 142</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-lx316">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 2: British Airways BA 711 -->
+      <div class="flight-card" id="card-flight-ba711" onclick="selectFlight('ba711')">
+        <div class="flight-left">
+          <div class="airline-logo-box ba">BA</div>
+          <div class="flight-times-col">
+            <div class="flight-times">10:20 – 11:15</div>
+            <div class="flight-airline-name">British Airways • BA 711</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">1h 55m</div>
+            <div class="flight-stops">Non-stop • ZRH ➔ LHR</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 158</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-ba711">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 3: easyJet EZS 8421 -->
+      <div class="flight-card" id="card-flight-ezs8421" onclick="selectFlight('ezs8421')">
+        <div class="flight-left">
+          <div class="airline-logo-box easyjet">U2</div>
+          <div class="flight-times-col">
+            <div class="flight-times">13:40 – 14:35</div>
+            <div class="flight-airline-name">easyJet • EZS 8421</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">1h 55m</div>
+            <div class="flight-stops">Non-stop • ZRH ➔ LGW</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 89</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-ezs8421">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 4: Lufthansa LH 1184 -->
+      <div class="flight-card" id="card-flight-lh1184" onclick="selectFlight('lh1184')">
+        <div class="flight-left">
+          <div class="airline-logo-box lh">LH</div>
+          <div class="flight-times-col">
+            <div class="flight-times">08:00 – 11:45</div>
+            <div class="flight-airline-name">Lufthansa • LH 1184</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">3h 45m</div>
+            <div class="flight-stops one-stop">1 stop • FRA (55m layover)</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 215</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-lh1184">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 5: Air France AF 1114 -->
+      <div class="flight-card" id="card-flight-af1114" onclick="selectFlight('af1114')">
+        <div class="flight-left">
+          <div class="airline-logo-box" style="background: #002157; color: white;">AF</div>
+          <div class="flight-times-col">
+            <div class="flight-times">12:15 – 15:40</div>
+            <div class="flight-airline-name">Air France • AF 1114</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">3h 25m</div>
+            <div class="flight-stops one-stop">1 stop • CDG (1h 10m layover)</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 178</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-af1114">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 6: KLM Royal Dutch Airlines KL 1960 -->
+      <div class="flight-card" id="card-flight-kl1960" onclick="selectFlight('kl1960')">
+        <div class="flight-left">
+          <div class="airline-logo-box" style="background: #00a1de; color: white;">KL</div>
+          <div class="flight-times-col">
+            <div class="flight-times">09:30 – 13:10</div>
+            <div class="flight-airline-name">KLM Royal Dutch Airlines • KL 1960</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">3h 40m</div>
+            <div class="flight-stops one-stop">1 stop • AMS (1h 05m layover)</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 165</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-kl1960">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 7: British Airways BA 715 -->
+      <div class="flight-card" id="card-flight-ba715" onclick="selectFlight('ba715')">
+        <div class="flight-left">
+          <div class="airline-logo-box ba">BA</div>
+          <div class="flight-times-col">
+            <div class="flight-times">14:50 – 15:45</div>
+            <div class="flight-airline-name">British Airways • BA 715</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">1h 55m</div>
+            <div class="flight-stops">Non-stop • ZRH ➔ LHR</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 189</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-ba715">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 8: Swiss International Air Lines LX 324 -->
+      <div class="flight-card" id="card-flight-lx324" onclick="selectFlight('lx324')">
+        <div class="flight-left">
+          <div class="airline-logo-box swiss">LX</div>
+          <div class="flight-times-col">
+            <div class="flight-times">17:25 – 18:15</div>
+            <div class="flight-airline-name">Swiss International Air Lines • LX 324</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">1h 50m</div>
+            <div class="flight-stops">Non-stop • ZRH ➔ LHR</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 210</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-lx324">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 9: Eurowings EW 9762 -->
+      <div class="flight-card" id="card-flight-ew9762" onclick="selectFlight('ew9762')">
+        <div class="flight-left">
+          <div class="airline-logo-box" style="background: #660033; color: white;">EW</div>
+          <div class="flight-times-col">
+            <div class="flight-times">06:45 – 10:30</div>
+            <div class="flight-airline-name">Eurowings • EW 9762</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">3h 45m</div>
+            <div class="flight-stops one-stop">1 stop • DUS (1h 15m layover)</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 115</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-ew9762">Select flight</button>
+        </div>
+      </div>
+
+      <!-- Card 10: Austrian Airlines OS 562 -->
+      <div class="flight-card" id="card-flight-os562" onclick="selectFlight('os562')">
+        <div class="flight-left">
+          <div class="airline-logo-box" style="background: #d81e05; color: white;">OS</div>
+          <div class="flight-times-col">
+            <div class="flight-times">11:00 – 16:05</div>
+            <div class="flight-airline-name">Austrian Airlines • OS 562</div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="flight-duration">5h 05m</div>
+            <div class="flight-stops one-stop">1 stop • VIE (2h 20m layover)</div>
+          </div>
+        </div>
+        <div class="flight-right">
+          <div class="flight-price-box">
+            <div class="flight-price">CHF 198</div>
+            <div class="flight-price-sub">One-way total</div>
+          </div>
+          <button class="btn-select-flight" id="btn-select-os562">Select flight</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Itinerary Confirmed Section (Final Terminal Step) -->
+    <div class="confirmation-banner hidden" id="flight-confirmation-card">
+      <div class="conf-icon">✓</div>
+      <div class="conf-details">
+        <h3>Itinerary Confirmed — Swiss International Air Lines LX 316</h3>
+        <p>Your one-way flight from <strong>Zurich (ZRH)</strong> to <strong>London Heathrow (LHR)</strong> on <strong>Sep 20, 2026</strong> has been successfully booked for 1 passenger.</p>
+        <p>Total Paid: <strong>CHF 142.00</strong> • E-Ticket Issued • Cabin: Economy</p>
+        <span class="conf-pnr">BOOKING REF / PNR: LX-990-28194412</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Real interactive logic on this standalone page
+    const searchBtn = document.getElementById('search-flights-btn');
+    const originInput = document.getElementById('origin-input');
+    const destInput = document.getElementById('destination-input');
+    const resultsSection = document.getElementById('flight-results-section');
+    const confCard = document.getElementById('flight-confirmation-card');
+
+    searchBtn.addEventListener('click', () => {
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    window.selectFlight = function(flightId) {
+      document.querySelectorAll('.flight-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.btn-select-flight').forEach(b => {
+        b.classList.remove('selected');
+        b.textContent = 'Select flight';
+      });
+
+      const card = document.getElementById(`card-flight-${flightId}`);
+      const btn = document.getElementById(`btn-select-${flightId}`);
+      if (card) card.classList.add('selected');
+      if (btn) {
+        btn.classList.add('selected');
+        btn.textContent = '✓ Selected';
+      }
+
+      confCard.classList.remove('hidden');
+      confCard.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Agent Visual Cursor Positioning API
+    window.setAgentCursor = function(x, y, label) {
+      const c = document.getElementById('agent-visual-cursor');
+      if (!c) return;
+      c.style.display = 'block';
+      c.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      if (label) {
+        const tag = c.querySelector('.agent-cursor-tag');
+        if (tag) tag.textContent = label;
+      }
+    };
+  </script>
+</body>
+</html>

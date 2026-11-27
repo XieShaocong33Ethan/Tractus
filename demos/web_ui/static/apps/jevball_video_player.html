@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACTUS JEVBALL • 1080p Autonomous Match Highlights</title>
+  <style>
+    :root {
+      --bg: #06090f;
+      --surface-1: #0d121f;
+      --surface-2: #141c2e;
+      --border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --cyan: #00f0ff;
+      --emerald: #10b981;
+      --crimson: #ff3355;
+      --gold: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    .mono { font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace; }
+
+    .player-header {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      font-size: 26px;
+    }
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--cyan);
+      margin-top: 2px;
+    }
+    .badge-pill {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Scenario Tabs */
+    .scenario-nav {
+      width: 100%;
+      max-width: 1240px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      background: var(--surface-2);
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(37, 99, 235, 0.2));
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+    }
+    .tab-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+    .tab-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .tab-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .main-wrap {
+      width: 100%;
+      max-width: 1240px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+    }
+    .video-box {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .meta-box {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .meta-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .item-k { color: var(--text-dim); }
+    .item-v { font-weight: 700; }
+    .v-green { color: var(--emerald); }
+    .v-cyan { color: var(--cyan); }
+    .v-gold { color: var(--gold); }
+
+    .phase-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .phase-card {
+      background: #080c14;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+    }
+    .phase-card-title {
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 3px;
+    }
+    .phase-card-desc {
+      color: var(--text-dim);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: auto;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.2s ease;
+    }
+    .btn-download:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="player-header">
+    <div class="brand-wrap">
+      <div class="brand-icon">⚽</div>
+      <div>
+        <div class="brand-title">TRACTUS JEVBALL • 1080p Autonomous Match Footage Gallery</div>
+        <div class="brand-sub mono">Tractus-0.8B (0.82B params) • 22 AI Players 100% Autonomous Match • Zero Scripted Overrides • 2.5D Broadcast View</div>
+      </div>
+    </div>
+    <div class="badge-pill mono">✔ Physical Truth • Zero Coordinate Overrides</div>
+  </header>
+
+  <!-- Scenario Selection Tabs -->
+  <nav class="scenario-nav mono">
+    <button id="tab-168" class="tab-btn active" onclick="switchPlan('168')">
+      <span class="tab-tag">Seed 168 • Pure Autonomous</span>
+      <span class="tab-title">Central Striker Near-Post Slant</span>
+      <span class="tab-sub">35s Contract: 30s Build-up + 5s Celebration (Primary)</span>
+    </button>
+    <button id="tab-90" class="tab-btn" onclick="switchPlan('90')">
+      <span class="tab-tag">Seed 90 • Pure Autonomous</span>
+      <span class="tab-title">20m Ground Screamer (Messi #10)</span>
+      <span class="tab-sub">35s Contract: Top of Arc Ground Drive</span>
+    </button>
+    <button id="tab-227" class="tab-btn" onclick="switchPlan('227')">
+      <span class="tab-tag">Seed 227 • Pure Autonomous</span>
+      <span class="tab-title">High-Press Counter Trap & Breakaway</span>
+      <span class="tab-sub">35s Contract: Turnover & Solo Breakaway</span>
+    </button>
+    <button id="tab-c" class="tab-btn" onclick="switchPlan('C')">
+      <span class="tab-tag">Plan C • High Turnover</span>
+      <span class="tab-title">Defender Delay Turnover Goal</span>
+      <span class="tab-sub">Plan C Historical Comparison</span>
+    </button>
+  </nav>
+
+  <main class="main-wrap">
+    <!-- Video Player Box -->
+    <div class="video-box">
+      <video id="main-video" controls autoplay loop playsinline>
+        <source id="video-source" src="/static/videos/05_pure_autonomous_model_goal_seed168.mp4" type="video/mp4">
+        Your browser does not support HTML5 video playback.
+      </video>
+    </div>
+
+    <!-- Metadata & Telemetry Dossier -->
+    <aside class="meta-box">
+      <div class="meta-title mono" id="dossier-title">MATCH DOSSIER :: Seed 168 (Central Striker Near-Post Slant)</div>
+
+      <div class="item-row mono">
+        <span class="item-k">Tactical Phase:</span>
+        <span class="item-v v-cyan" id="meta-type">Half-Space Overlap & Near-Post Ground Drive</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Clip Contract:</span>
+        <span class="item-v v-green" id="meta-time">35.0s (30s Build-up + 30.0s Goal Impact + 5s Celebration)</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Arbitration Engine:</span>
+        <span class="item-v v-green">100% Model Autonomous (Zero Heuristics / Zero Overrides)</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Model Backbone:</span>
+        <span class="item-v v-cyan">Tractus-0.8B</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Total Parameters:</span>
+        <span class="item-v v-gold">0.82B (0.58B backbone)</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Non-Embedding Backbone:</span>
+        <span class="item-v">0.58B / 580M (24-Layer Hybrid)</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Inference Path:</span>
+        <span class="item-v v-green">Single-Pass Prefill (0 Generated Tokens)</span>
+      </div>
+      <div class="item-row mono">
+        <span class="item-k">Video Specification:</span>
+        <span class="item-v" id="meta-res">1360x900 @ 30fps (Broadcast View)</span>
+      </div>
+
+      <div class="meta-title mono" style="margin-top: 6px;">TACTICAL PHASE BREAKDOWN</div>
+      <div class="phase-timeline" id="timeline-box">
+        <div class="phase-card">
+          <div class="phase-card-title">01 Midfield Circulation (0s - 12s)</div>
+          <div class="phase-card-desc">Ball circulates between pivot and right midfield, shifting the opposing defensive line.</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-card-title">02 Vertical Penetration (12s - 24s)</div>
+          <div class="phase-card-desc">Penetrative pass through the half-space into the penalty arc, pinning central defenders.</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-card-title">03 Striker Off-the-Shoulder Slant (24s - 30s)</div>
+          <div class="phase-card-desc">Central Striker (#9 Haaland) arcs behind center backs, timing run to beat offside trap 1v1!</div>
+        </div>
+        <div class="phase-card">
+          <div class="phase-card-title">04 Near-Post Finish & Celebration (30s - 35s)</div>
+          <div class="phase-card-desc">Impact at 30.0s: clinical ground finish inside the near post for 1-0, followed by 5s celebration.</div>
+        </div>
+      </div>
+
+      <a id="btn-download" href="/static/videos/05_pure_autonomous_model_goal_seed168.mp4" download class="btn-download mono">
+        <span>DOWNLOAD 1080P MP4 FOOTAGE</span>
+      </a>
+    </aside>
+  </main>
+
+  <script>
+    const DOSSIERS = {
+      "168": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed168.mp4",
+        title: "MATCH DOSSIER :: Seed 168 (Central Striker Near-Post Slant)",
+        type: "Half-Space Overlap & Near-Post Ground Drive",
+        time: "35.0s (30s Build-up + 30.0s Goal Impact + 5s Celebration)",
+        phases: [
+          { t: "01 Midfield Circulation (0s - 12s)", d: "Ball circulates between pivot and right midfield, shifting the opposing defensive line." },
+          { t: "02 Vertical Penetration (12s - 24s)", d: "Penetrative pass through the half-space into the penalty arc, pinning central defenders." },
+          { t: "03 Striker Off-the-Shoulder Slant (24s - 30s)", d: "Central Striker (#9 Haaland) arcs behind center backs, timing run to beat offside trap 1v1!" },
+          { t: "04 Near-Post Finish & Celebration (30s - 35s)", d: "Impact at 30.0s: clinical ground finish inside the near post for 1-0, followed by 5s celebration." }
+        ]
+      },
+      "90": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed90.mp4",
+        title: "MATCH DOSSIER :: Seed 90 (20m Ground Screamer)",
+        type: "Top of Arc Ground Drive (Messi #10)",
+        time: "35.0s (30s Build-up + 30.0s Goal Impact + 5s Celebration)",
+        phases: [
+          { t: "01 Flank Progression (0s - 15s)", d: "Winger holds possession wide, compressing defense and opening space at top of arc." },
+          { t: "02 Hold-Up Play (15s - 26s)", d: "Striker shields ball against center back, drawing double team before layoff." },
+          { t: "03 Cutback Layoff (26s - 30s)", d: "Smooth cutback layoff into attacking pocket for oncoming #10 Messi." },
+          { t: "04 Ground Screamer Finish (30s - 35s)", d: "First-time laser strike into bottom corner at 30.0s, marking 1-0 impact." }
+        ]
+      },
+      "227": {
+        video: "/static/videos/05_pure_autonomous_model_goal_seed227.mp4",
+        title: "MATCH DOSSIER :: Seed 227 (High-Press Counter Trap)",
+        type: "High-Press Turnover & Breakaway Finish",
+        time: "35.0s (30s Build-up + 30.0s Goal Impact + 5s Celebration)",
+        phases: [
+          { t: "01 Midfield Duel (0s - 16s)", d: "Intense center-circle contested possession, red team recaptures momentum." },
+          { t: "02 High-Press Turnover (16s - 26s)", d: "Coordinated pressing trap closes passing lanes, forcing errant lateral pass." },
+          { t: "03 Solo Breakaway (26s - 30s)", d: "#10 intercepts and bursts into box unopposed on clean breakaway!" },
+          { t: "04 Far-Post Impact Finish (30s - 35s)", d: "Calm finish inside far post past oncoming keeper at 30.0s for 1-0 impact." }
+        ]
+      },
+      "C": {
+        video: "/static/videos/05_plan_c_highpress_turnover_goal.mp4",
+        title: "TACTICAL ANALYSIS :: Plan C (Turnover Benchmark)",
+        type: "High-Press Turnover & Breakaway",
+        time: "Plan C Reference Footage",
+        phases: [
+          { t: "01 Opposing Defender Hesitation", d: "Goalkeeper plays out from back; defender delays distribution under high press." },
+          { t: "02 Striker Acceleration & Tackle", d: "Striker closes down with timed sliding tackle to strip possession cleanly!" },
+          { t: "03 Clean Breakaway to Goal", d: "Striker carries into open space, leaving defense behind to face keeper 1v1." },
+          { t: "04 Clinical Far-Post Finish!", d: "Goalkeeper advances; striker rolls ball cleanly into far corner for 1-0 impact." }
+        ]
+      }
+    };
+
+    function switchPlan(key) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-${key.toLowerCase()}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const data = DOSSIERS[key];
+      if (!data) return;
+
+      const video = document.getElementById('main-video');
+      video.src = data.video;
+      video.load();
+      video.play().catch(e => console.log('Autoplay handled:', e));
+
+      document.getElementById('dossier-title').innerText = data.title;
+      document.getElementById('meta-type').innerText = data.type;
+      document.getElementById('meta-time').innerText = data.time;
+      document.getElementById('btn-download').href = data.video;
+
+      const tBox = document.getElementById('timeline-box');
+      tBox.innerHTML = data.phases.map(p => `
+        <div class="phase-card">
+          <div class="phase-card-title">${p.t}</div>
+          <div class="phase-card-desc">${p.d}</div>
+        </div>
+      `).join('');
+    }
+  </script>
+  </script>
+</body>
+</html>

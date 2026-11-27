@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACTUS :: Zero-Key Neural Intent Router — High-Frequency Neural Switchboard</title>
+  <link rel="stylesheet" href="/static/tractus_theme.css">
+  <link rel="stylesheet" href="/static/demo3.css">
+</head>
+<body>
+  <div class="tx-root">
+    <header class="tx-masthead">
+      <div class="tx-brand">
+        <div class="tx-brand-mark">TRACTUS<span class="dot">.</span>ROUTER</div>
+        <div class="tx-brand-sub">ZERO-KEY ESCALATION MATRIX</div>
+      </div>
+      <div class="tx-badges">
+        <span class="tx-chip tx-chip-live">TRACTUS-0.8B INT4</span>
+        <span class="tx-chip">ZERO-KEY DIRECT</span>
+        <span class="tx-chip">POLYAI MINDS-14 CC-BY-4.0</span>
+        <span class="tx-chip">4-HEAD RISK RADAR</span>
+      </div>
+
+      <!-- Cross-Demo Navigation Strip -->
+      <nav class="tx-nav-strip">
+        <a href="/demo1" class="tx-nav-item">01 // WEB AGENT</a>
+        <a href="/demo2" class="tx-nav-item">02 // MEETING SENTINEL</a>
+        <a href="/demo3" class="tx-nav-item active">03 // SERVICE ROUTER</a>
+        <a href="/demo4" class="tx-nav-item">04 // SPATIAL DYNAMICS</a>
+      </nav>
+      <div class="tx-readouts">
+        <div class="tx-readout">
+          <div class="tx-readout-val mint" id="kpi-route">--</div>
+          <div class="tx-readout-label">4-Head Route</div>
+        </div>
+        <div class="tx-readout">
+          <div class="tx-readout-val amber" id="kpi-handoff">--</div>
+          <div class="tx-readout-label">Handoff</div>
+        </div>
+        <div class="tx-readout">
+          <div class="tx-readout-val vermilion" id="kpi-speedup">--</div>
+          <div class="tx-readout-label">vs IVR</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="tx-main">
+      <!-- Workbench -->
+      <section class="workbench">
+        <div class="call-rail">
+          <div class="call-rail-live">LIVE CONNECTED</div>
+          <span>VIP PRIORITY LINE 01</span>
+          <span class="call-timer" id="call-timer">00:00 / 00:09</span>
+        </div>
+
+        <div class="ivr-hero">
+          <div class="ivr-hero-title">Legacy IVR Death Spiral vs Zero-Key Instant Injection</div>
+          <div class="ivr-track">
+            <div class="ivr-row">
+              <div class="ivr-row-label">LEGACY IVR</div>
+              <div class="ivr-bar-track">
+                <div class="ivr-bar-fill" style="width: 100%;"></div>
+                <div class="ivr-bar-segments"><span></span><span></span><span></span><span></span></div>
+              </div>
+              <div class="ivr-row-val">85.0s</div>
+            </div>
+            <div class="ivr-row tractus">
+              <div class="ivr-row-label">TRACTUS</div>
+              <div class="ivr-bar-track">
+                <div class="ivr-bar-fill"></div>
+              </div>
+              <div class="ivr-row-val" id="ivr-tractus-val">Single Pass</div>
+            </div>
+          </div>
+          <div class="ivr-footer">Dial 1 (22s) → Dial 3 (45s) → Dial 0 (68s) → On Hold (85s) → 45% Drop-off — vs. Streamed ASR Transcript → Single-Pass 4-Head Triage + Direct Dispatch (0 Generated Tokens · 0 Keys Pressed)</div>
+        </div>
+
+        <div class="customer-profile">
+          <div class="profile-header">
+            <div class="avatar">AS</div>
+            <div class="profile-info">
+              <h3>Alexander Sterling <span class="vip-badge">VIP PREMIER</span></h3>
+              <div class="profile-meta">ACCT #88902 · Premier Account · Account tenure 6yr</div>
+            </div>
+          </div>
+          <div class="profile-kpis">
+            <div class="profile-kpi">
+              <div class="profile-kpi-label">Tenure</div>
+              <div class="profile-kpi-val">6 YR</div>
+            </div>
+            <div class="profile-kpi">
+              <div class="profile-kpi-label">Credit Tier</div>
+              <div class="profile-kpi-val" style="color: var(--mint);">AAA</div>
+            </div>
+            <div class="profile-kpi">
+              <div class="profile-kpi-label">Annual Value</div>
+              <div class="profile-kpi-val">$94,100</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="transactions">
+          <div class="section-label">Account Transaction Ledger</div>
+          <table class="tx-table">
+            <thead><tr><th>Time</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="dispute">
+                <td>11-02 03:15</td>
+                <td><strong>Unauthorized POS Charge</strong></td>
+                <td class="amount negative">-$200.00</td>
+                <td style="color: var(--vermilion); font-weight: 700;">FLAGGED HIGH-RISK</td>
+              </tr>
+              <tr>
+                <td>10-28 14:22</td>
+                <td>Direct Debit Repayment</td>
+                <td class="amount positive">+$12,500.00</td>
+                <td>Completed</td>
+              </tr>
+              <tr>
+                <td>10-15 19:30</td>
+                <td>Five-Star Hotel Business Travel</td>
+                <td class="amount">-$1,680.00</td>
+                <td>Settled</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="conversation">
+          <div class="section-label">Live Voice Transcript</div>
+          <div class="transcript-box">
+            <span class="speaker-tag">CUSTOMER — ALEXANDER STERLING</span>
+            <span id="transcript-text">Press PLAY AUDIO to stream the customer complaint and begin real-time analysis…</span>
+          </div>
+          <div class="section-label">Early Decision Lock Oscilloscope</div>
+          <div class="oscilloscope">
+            <div class="osc-wave" id="osc-wave"></div>
+            <div class="osc-lock-line" id="osc-lock-line"></div>
+            <div class="osc-lock-label" id="osc-lock-label">LOCKED 0.9s</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Switchboard HUD -->
+      <aside class="hud">
+        <div class="hud-section route-box">
+          <div class="tx-panel-title">Primary Decision Route</div>
+          <div class="route-readout" id="route-display">AWAITING ANALYSIS…</div>
+        </div>
+
+        <div class="hud-section radar-box">
+          <div class="tx-panel-title">4-Head Holographic Risk Radar</div>
+          <div class="radar-canvas-wrap">
+            <canvas id="radar-canvas" width="340" height="230"></canvas>
+          </div>
+          <div class="radar-legend">
+            <div class="legend-row">
+              <span><span class="legend-dot" style="background: var(--vermilion);"></span>Compliance Risk</span>
+              <span class="legend-val" id="leg-compliance" style="color: var(--vermilion);">25%</span>
+            </div>
+            <div class="legend-row">
+              <span><span class="legend-dot" style="background: var(--amber);"></span>Escalation Demand</span>
+              <span class="legend-val" id="leg-handoff" style="color: var(--amber);">30%</span>
+            </div>
+            <div class="legend-row">
+              <span><span class="legend-dot" style="background: var(--cyan);"></span>Billing Dispute</span>
+              <span class="legend-val" id="leg-billing" style="color: var(--cyan);">35%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-log-head">Core Banking Instant Action Terminal</div>
+        <div class="risk-feed" id="risk-feed">
+          <div class="risk-card" style="opacity: 0.5;">Expert disposition cards will render here after the audio stream is analyzed.</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="tx-footer">
+      <div class="tx-footer-meta">CHANNEL :: VOICE-BANKING-FRAUD-01</div>
+      <div class="tx-btn-group">
+        <button class="tx-btn" id="btn-reset">RESET</button>
+        <button class="tx-btn tx-btn-primary" id="btn-analyze">PLAY AUDIO (8.9s)</button>
+      </div>
+    </footer>
+  </div>
+
+  <audio id="audio-player" src="/static/audio/demo3_complaint_full.mp3" preload="auto"></audio>
+
+  <script src="/static/demo3_app.js"></script>
+</body>
+</html>

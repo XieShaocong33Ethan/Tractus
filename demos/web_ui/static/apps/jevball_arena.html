@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JEVBALL • Tractus Multi-Agent Spatial Tactical Arena</title>
+  <style>
+    :root {
+      --bg: #050811;
+      --surface-1: #0b1120;
+      --surface-2: #121c33;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.16);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --cyan: #00f0ff;
+      --blue: #3b82f6;
+      --emerald: #10b981;
+      --crimson: #ff3355;
+      --gold: #f59e0b;
+      --purple: #a855f7;
+      --pitch-green: #0d3b1e;
+      --pitch-stripe: #092e16;
+      --pitch-line: rgba(255, 255, 255, 0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .mono { font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace; }
+
+    /* Top Studio Header */
+    header.arena-header {
+      background: rgba(11, 17, 32, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #10b981, #0284c7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-sep { color: var(--text-dim); }
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* Scoreboard Pill */
+    .scoreboard-strip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #080c16;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 18px;
+    }
+    .team-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .team-home { color: var(--cyan); }
+    .team-away { color: var(--crimson); }
+    .score-nums {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #fff;
+    }
+    .match-clock {
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .phase-pill {
+      font-size: 10.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    /* Engine Status */
+    .engine-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulseDot 1.8s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Main Console Grid */
+    main.arena-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 18px;
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Left Stage: 2D Pitch Canvas */
+    .pitch-stage-box {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    .stage-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stage-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .canvas-wrap {
+      width: 100%;
+      height: 540px;
+      background: #080c14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    canvas#pitch-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Goal Flash Overlay */
+    .goal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(16, 185, 129, 0.25);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 20;
+    }
+    .goal-overlay.active { opacity: 1; }
+    .goal-banner {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(16, 185, 129, 0.9), 0 0 60px rgba(0, 240, 255, 0.6);
+      animation: goalPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .goal-sub {
+      font-size: 16px;
+      font-weight: 700;
+      color: #6ee7b7;
+      margin-top: 8px;
+    }
+    @keyframes goalPop {
+      0% { transform: scale(0.6); }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1.0); }
+    }
+
+    /* Bottom Control & Event Bar */
+    .pitch-bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #080c14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+    .event-ticker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+    }
+    .event-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    /* Right Column: Tractus Metacognitive Brain Studio */
+    .brain-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Tractus Phase Card */
+    .tractus-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Dual-Mode Greek Route Pill */
+    .route-display-box {
+      background: #080c16;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .route-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .greek-token-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .badge-alpha {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(2, 132, 199, 0.3));
+      color: var(--emerald);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+    }
+    .badge-epsilon {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(225, 29, 72, 0.3));
+      color: #c084fc;
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+    }
+    .route-name-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .route-name-sub {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .delta-z-pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+
+    /* Candidate Action Distribution List */
+    .candidates-list-box {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: 290px;
+      overflow-y: auto;
+    }
+    .candidate-row {
+      background: #080c16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .candidate-row.is-selected {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.18);
+    }
+    .cand-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .cand-label {
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cand-slot {
+      color: var(--gold);
+      font-weight: 800;
+    }
+    .cand-pct {
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+    .candidate-row.is-selected .cand-pct {
+      color: var(--emerald);
+      font-size: 13px;
+    }
+    .meter-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      background: var(--cyan);
+      border-radius: 3px;
+      transition: width 0.25s ease;
+    }
+    .candidate-row.is-selected .meter-fill {
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+    .cand-facts {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* SLA Telemetry Card */
+    .sla-strip {
+      background: #080c16;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sla-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+    .sla-k { color: var(--text-dim); }
+    .sla-v { font-weight: 700; }
+    .v-green { color: var(--emerald); }
+    .v-red { color: var(--crimson); }
+    .v-cyan { color: var(--cyan); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Studio Header -->
+  <header class="arena-header">
+    <div class="brand-group">
+      <div class="brand-icon">⚽</div>
+      <div class="brand-title">
+        <span>TRACTUS JEVBALL</span>
+        <span class="brand-sep">•</span>
+        <span class="brand-subtitle">Tractus Multi-Agent Spatial Tactical Arena</span>
+      </div>
+    </div>
+
+    <!-- Live Scoreboard -->
+    <div class="scoreboard-strip mono">
+      <div class="team-badge team-home">
+        <span>HOME</span>
+      </div>
+      <div class="score-nums" id="score-display">1 - 0</div>
+      <div class="team-badge team-away">
+        <span>AWAY</span>
+      </div>
+      <span class="brand-sep">|</span>
+      <div class="match-clock" id="clock-display">34:18.4</div>
+      <div class="phase-pill" id="phase-pill">ATTACKING_TRANSITION</div>
+    </div>
+
+    <!-- Hardware SLA Badge -->
+    <div class="engine-status-badge mono">
+      <span class="live-dot"></span>
+      <span id="engine-tag">Tractus-0.8B • Apple Silicon Metal GPU (Single-Pass Prefill)</span>
+    </div>
+  </header>
+
+  <!-- Main Console Grid -->
+  <main class="arena-grid">
+
+    <!-- Left Stage: 2D Pitch Canvas -->
+    <section class="pitch-stage-box">
+      <div class="stage-header-row">
+        <div class="stage-title">
+          <span>⚽ 105m x 68m Full-Physics Tactical Pitch (2D Tactical Radar)</span>
+        </div>
+        <div class="stage-title mono" id="carrier-tag" style="color: var(--cyan);">
+          <span>Ball Carrier: #10 Messi (CAM) at (68.2m, 34.0m)</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="pitch-canvas" width="1024" height="660"></canvas>
+        <div class="goal-overlay" id="goal-overlay">
+          <div class="goal-banner">⚽ GOOOAAAL!</div>
+          <div class="goal-sub mono">HOME 2 - 0 AWAY • Neural Streaming Low-Latency Tactical Closure</div>
+        </div>
+      </div>
+
+      <div class="pitch-bottom-bar mono">
+        <div class="event-ticker">
+          <span class="event-badge">LIVE EVENT</span>
+          <span id="event-desc-text">#10 Messi advances past midfield, scanning half-space passing channels...</span>
+        </div>
+        <div class="event-ticker" id="threat-eta-box">
+          <span style="color: var(--text-dim);">Nearest Defensive Threat:</span>
+          <span style="color: var(--emerald);" id="threat-eta-val">0.58s (3.8m)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Tractus Metacognitive Brain Studio -->
+    <aside class="brain-col">
+
+      <!-- Tractus Dual-Mode Phase Transition Card -->
+      <section class="tractus-card">
+        <div class="card-title-row">
+          <span class="card-title">Tractus Control Plane Meta-Routing</span>
+          <span class="card-title mono" style="color: var(--cyan);">5-TOKEN BASIS</span>
+        </div>
+
+        <div class="route-display-box" id="route-box">
+          <div class="route-left">
+            <div class="greek-token-badge badge-alpha mono" id="route-badge">α</div>
+            <div>
+              <div class="route-name-title" id="route-name-text">System 1: Direct Action (Direct Reflex)</div>
+              <div class="route-name-sub mono" id="route-lat-text">Neural Forward: -- • 0% Timeout</div>
+            </div>
+          </div>
+          <div class="delta-z-pill mono" id="delta-z-val">Δz = +1.97</div>
+        </div>
+      </section>
+
+      <!-- Candidate Actions Distribution Card -->
+      <section class="tractus-card" style="flex: 1;">
+        <div class="card-title-row">
+          <span class="card-title">Candidate Tactical Action Distribution (Typed Actions)</span>
+          <span class="card-title mono" id="cand-count-badge" style="color: var(--gold);">5 CANDIDATES</span>
+        </div>
+
+        <div class="candidates-list-box" id="candidates-box">
+          <!-- Dynamically Injected Rows -->
+        </div>
+
+        <!-- SLA Real-Time Stopwatch Strip -->
+        <div class="sla-strip mono">
+          <div class="sla-row">
+            <span class="sla-k">Carrier Hard SLA Deadline:</span>
+            <span class="sla-v v-cyan">300.0ms</span>
+          </div>
+          <div class="sla-row">
+            <span class="sla-k">Tractus Metal GPU Measured Latency:</span>
+            <span class="sla-v v-green" id="sla-tractus-ms">-- (Awaiting Live Tick)</span>
+          </div>
+          <div class="sla-row">
+            <span class="sla-k">Cloud API Baseline (366ms):</span>
+            <span class="sla-v v-red">✖ Timeout Regression to Fallback (Lag -66ms)</span>
+          </div>
+          <div class="sla-row" style="border-top: 1px solid var(--border); padding-top: 6px; margin-top: 2px;">
+            <span class="sla-k">Hardware Acceleration Speedup:</span>
+            <span class="sla-v v-green" id="sla-speedup-text">-- • $0 Token Cost</span>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+
+  </main>
+
+  <script>
+    // Pitch Canvas Drawing Engine
+    const canvas = document.getElementById("pitch-canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Standard Match State
+    let currentPlayers = [];
+    let currentBall = { x: 68.2, y: 34.0 };
+    let activeCarrierId = "H10";
+    let activeTrajectory = null; // { from: [x,y], to: [x,y], type: 'pass' }
+
+    function drawPitch() {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // 1. Lush Green Pitch with Lawn Stripes
+      const numStripes = 15;
+      const stripeW = W / numStripes;
+      for (let i = 0; i < numStripes; i++) {
+        ctx.fillStyle = (i % 2 === 0) ? "#0d3b1e" : "#092e16";
+        ctx.fillRect(i * stripeW, 0, stripeW, H);
+      }
+
+      // 2. White Pitch Markings
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.lineWidth = 2.0;
+
+      // Outer Boundary
+      const pad = 24;
+      const pW = W - pad * 2;
+      const pH = H - pad * 2;
+      ctx.strokeRect(pad, pad, pW, pH);
+
+      // Midfield Line & Circle
+      const midX = pad + pW / 2;
+      ctx.beginPath();
+      ctx.moveTo(midX, pad);
+      ctx.lineTo(midX, pad + pH);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(midX, pad + pH / 2, 60, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.beginPath();
+      ctx.arc(midX, pad + pH / 2, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Penalty Boxes
+      const boxW = pW * 0.16;
+      const boxH = pH * 0.52;
+      const boxY = pad + (pH - boxH) / 2;
+      // Left Box (Home defending)
+      ctx.strokeRect(pad, boxY, boxW, boxH);
+      // Right Box (Away defending / Goal target)
+      ctx.strokeRect(pad + pW - boxW, boxY, boxW, boxH);
+
+      // 6-yard boxes
+      const smallW = boxW * 0.35;
+      const smallH = boxH * 0.45;
+      const smallY = pad + (pH - smallH) / 2;
+      ctx.strokeRect(pad, smallY, smallW, smallH);
+      ctx.strokeRect(pad + pW - smallW, smallY, smallW, smallH);
+
+      // Goal Nets
+      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+      ctx.fillRect(pad - 12, pad + pH / 2 - 28, 12, 56);
+      ctx.fillRect(pad + pW, pad + pH / 2 - 28, 12, 56);
+      ctx.strokeRect(pad - 12, pad + pH / 2 - 28, 12, 56);
+      ctx.strokeRect(pad + pW, pad + pH / 2 - 28, 12, 56);
+
+      // Helper coordinate mapping: 105m x 68m to Canvas
+      function toCanvas(x, y) {
+        return [
+          pad + (x / 105.0) * pW,
+          pad + (y / 68.0) * pH
+        ];
+      }
+
+      // 3. Draw Trajectory Vector
+      if (activeTrajectory) {
+        const [fx, fy] = toCanvas(activeTrajectory.from[0], activeTrajectory.from[1]);
+        const [tx, ty] = toCanvas(activeTrajectory.to[0], activeTrajectory.to[1]);
+
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 3.0;
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(fx, fy);
+        ctx.lineTo(tx, ty);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Target Ring
+        ctx.fillStyle = "rgba(245, 158, 11, 0.25)";
+        ctx.beginPath();
+        ctx.arc(tx, ty, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 2.0;
+        ctx.stroke();
+      }
+
+      // 4. Draw Players
+      currentPlayers.forEach(p => {
+        const [px, py] = toCanvas(p.x, p.y);
+        const isHome = (p.team === "home");
+        const isCarrier = (p.id === activeCarrierId);
+
+        // Carrier pulsating aura
+        if (isCarrier) {
+          ctx.fillStyle = "rgba(245, 158, 11, 0.3)";
+          ctx.beginPath();
+          ctx.arc(px, py, 22, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "#f59e0b";
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(px, py, 22, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Player Circle
+        ctx.fillStyle = isHome ? "#00f0ff" : "#ff3355";
+        ctx.beginPath();
+        ctx.arc(px, py, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Jersey Number
+        ctx.fillStyle = isHome ? "#04101e" : "#ffffff";
+        ctx.font = "bold 9.5px 'JetBrains Mono', monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.number, px, py);
+
+        // Name tag for key players
+        if (["H9", "H10", "H7", "A1", "A4"].includes(p.id)) {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+          ctx.fillRect(px - 24, py + 14, 48, 14);
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "8.5px 'Plus Jakarta Sans', sans-serif";
+          ctx.fillText(p.name, px, py + 21);
+        }
+      });
+
+      // 5. Draw Football
+      const [bx, by] = toCanvas(currentBall.x, currentBall.y);
+      // Shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.beginPath();
+      ctx.arc(bx + 2, by + 3, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ball core
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(bx, by, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+    }
+
+    // Interactive Step Update (Called by Playwright Runner)
+    window.updateMatchTick = function(tickData) {
+      if (tickData.score) {
+        document.getElementById("score-display").innerText = tickData.score;
+      }
+      if (tickData.clock) {
+        document.getElementById("clock-display").innerText = tickData.clock;
+      }
+      if (tickData.phase) {
+        document.getElementById("phase-pill").innerText = tickData.phase;
+      }
+      if (tickData.event) {
+        document.getElementById("event-desc-text").innerText = tickData.event;
+      }
+      if (tickData.carrierTag) {
+        document.getElementById("carrier-tag").innerText = tickData.carrierTag;
+      }
+      if (tickData.threatEta) {
+        document.getElementById("threat-eta-val").innerText = tickData.threatEta;
+      }
+
+      // Tractus Route
+      if (tickData.route) {
+        const badge = document.getElementById("route-badge");
+        badge.innerText = tickData.route.symbol;
+        if (tickData.route.symbol === "α") {
+          badge.className = "greek-token-badge badge-alpha mono";
+          document.getElementById("route-name-text").innerText = "System 1: Direct Action (Direct Reflex)";
+        } else {
+          badge.className = "greek-token-badge badge-epsilon mono";
+          document.getElementById("route-name-text").innerText = "System 2: Deliberative Deep Search (System 2)";
+        }
+        document.getElementById("route-lat-text").innerText = `Neural Forward: ${tickData.route.latency}ms • 0% Timeout`;
+        document.getElementById("delta-z-val").innerText = `Δz = ${tickData.route.deltaZ}`;
+      }
+
+      // Candidates
+      if (tickData.candidates) {
+        let html = "";
+        tickData.candidates.forEach(c => {
+          const isSel = c.isSelected ? "is-selected" : "";
+          const selBadge = c.isSelected ? "<span style='color: var(--emerald); font-size: 10px;'>⚡ SELECTED</span>" : "";
+          html += `
+            <div class="candidate-row ${isSel}">
+              <div class="cand-head">
+                <span class="cand-label">
+                  <span class="cand-slot mono">[${c.slot}]</span>
+                  <span>${c.label}</span>
+                  ${selBadge}
+                </span>
+                <span class="cand-pct mono">${c.pct.toFixed(1)}%</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill" style="width: ${c.pct.toFixed(1)}%;"></div>
+              </div>
+              <div class="cand-facts mono">${c.facts}</div>
+            </div>
+          `;
+        });
+        document.getElementById("candidates-box").innerHTML = html;
+        document.getElementById("cand-count-badge").innerText = `${tickData.candidates.length} CANDIDATES`;
+      }
+
+      // SLA
+      if (tickData.sla) {
+        document.getElementById("sla-tractus-ms").innerText = `${tickData.sla.latencyMs.toFixed(1)}ms (Headroom +${(300.0 - tickData.sla.latencyMs).toFixed(1)}ms)`;
+        document.getElementById("sla-speedup-text").innerText = `${(366.0 / tickData.sla.latencyMs).toFixed(1)}x Speedup vs Cloud • $0 Token Cost`;
+      }
+
+      // Pitch updates
+      if (tickData.players) currentPlayers = tickData.players;
+      if (tickData.ball) currentBall = tickData.ball;
+      if (tickData.activeCarrierId) activeCarrierId = tickData.activeCarrierId;
+      if (tickData.trajectory !== undefined) activeTrajectory = tickData.trajectory;
+
+      // Goal Celebration
+      if (tickData.isGoal) {
+        document.getElementById("goal-overlay").classList.add("active");
+      }
+
+      drawPitch();
+    };
+
+    // Auto-init default pitch layout
+    drawPitch();
+  </script>
+</body>
+</html>
